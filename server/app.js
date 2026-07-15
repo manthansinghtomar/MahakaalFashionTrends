@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
 import { notFound, errorHandler } from './middleware/errorMiddleware.js';
 import authRouter from './routes/auth.routes.js';
+import uploadRouter from './routes/upload.routes.js';
 
 // Load environment variables
 dotenv.config();
@@ -24,6 +25,7 @@ app.use('/uploads', express.static('uploads'));
 
 // API Routes
 app.use('/api/auth', authRouter);
+app.use('/api/upload', uploadRouter);
 
 // Base Route
 app.get('/', (req, res) => {
