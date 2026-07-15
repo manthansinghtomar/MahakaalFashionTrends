@@ -1,0 +1,311 @@
+import Offer from '../models/Offer.js';
+import cloudinary from '../config/cloudinary.js';
+
+/**
+ * Checks if a proposed offer's date range overlaps with any existing active/active status offer.
+ */
+const checkOverlap = async (startDate, endDate, excludeOfferId = null) => {
+  const query = {
+    isActive: true,
+    status: 'active',
+    $or: [
+      {
+        startDate: { $lte: new Date(endDate) },
+        endDate: { $gte: new Date(startDate) },
+      },
+    ],
+  };
+
+  if (excludeOfferId) {
+    query._id = { $ne: excludeOfferId };
+  }
+
+  const overlappingOffer = await Offer.findOne(query);
+  return overlappingOffer;
+};
+
+/**
+ * @desc    Create a new offer (Admin only)
+ * @route   POST /api/offers
+ * @access  Private (Admin/Superadmin)
+ */
+export const createOffer = async (req, res, next) => {
+  try {
+    const { title, description, bannerImage, discountPercentage, startDate, endDate } = req.body;
+
+    // 1. Validation
+    if (!title || !description || !bannerImage || discountPercentage === undefined || !startDate || !endDate) {
+      res.status(400);
+      return next(new Error('Please provide title, description, bannerImage, discountPercentage, startDate, and endDate'));
+    }
+
+    if (!bannerImage.public_id || !bannerImage.url) {
+      res.status(400);
+      return next(new Error('bannerImage must contain public_id and url'));
+    }
+
+    if (discountPercentage < 0 || discountPercentage > 100) {
+      res.status(400);
+      return next(new Error('Discount percentage must be between 0 and 100'));
+    }
+
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+
+    if (start > end) {
+      res.status(400);
+      return next(new Error('End date must be on or after start date'));
+    }
+
+    // 2. Overlap Check
+    const overlapping = await checkOverlap(startDate, endDate);
+    if (overlapping) {
+      res.status(400);
+      return next(
+        new Error(`This offer overlaps with an existing active offer: "${overlapping.title}" (ends ${overlapping.endDate.toISOString().split('T')[0]})`)
+      );
+    }
+
+    // 3. Create Offer
+    const newOffer = await Offer.create({
+      title,
+      description,
+      bannerImage,
+      discountPercentage,
+      startDate: start,
+      endDate: end,
+    });
+
+    res.status(201).json({
+      success: true,
+      offer: newOffer,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * @desc    Update an offer (Admin only)
+ * @route   PUT /api/offers/:id
+ * @access  Private (Admin/Superadmin)
+ */
+export const updateOffer = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const updateData = { ...req.body };
+
+    const offer = await Offer.findById(id);
+    if (!offer) {
+      res.status(404);
+      return next(new Error('Offer not found'));
+    }
+
+    // Validate range if updated
+    if (updateData.discountPercentage !== undefined && (updateData.discountPercentage < 0 || updateData.discountPercentage > 100)) {
+      res.status(400);
+      return next(new Error('Discount percentage must be between 0 and 100'));
+    }
+
+    // Validate dates if updated
+    const start = updateData.startDate ? new Date(updateData.startDate) : offer.startDate;
+    const end = updateData.endDate ? new Date(updateData.endDate) : offer.endDate;
+
+    if (start > end) {
+      res.status(400);
+      return next(new Error('End date must be on or after start date'));
+    }
+
+    // Check overlap if dates or status are updated to active
+    const isNowActive = updateData.status !== 'inactive' && updateData.isActive !== false;
+    const wasActive = offer.status === 'active' && offer.isActive === true;
+    
+    if (isNowActive && (updateData.startDate || updateData.endDate || (!wasActive && (updateData.status || updateData.isActive !== undefined)))) {
+      const overlapping = await checkOverlap(start, end, id);
+      if (overlapping) {
+        res.status(400);
+        return next(
+          new Error(`This offer overlaps with an existing active offer: "${overlapping.title}" (ends ${overlapping.endDate.toISOString().split('T')[0]})`)
+        );
+      }
+    }
+
+    // Banner image cleanup on change
+    if (updateData.bannerImage && updateData.bannerImage.public_id !== offer.bannerImage.public_id) {
+      try {
+        await cloudinary.uploader.destroy(offer.bannerImage.public_id);
+      } catch (err) {
+        console.error(`Failed to delete old banner image ${offer.bannerImage.public_id} from Cloudinary:`, err);
+      }
+    }
+
+    // Apply updates
+    Object.assign(offer, updateData);
+    const updatedOffer = await offer.save();
+
+    res.status(200).json({
+      success: true,
+      offer: updatedOffer,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * @desc    Soft Delete Offer (Admin only)
+ * @route   DELETE /api/offers/:id
+ * @access  Private (Admin/Superadmin)
+ */
+export const deleteOffer = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    const offer = await Offer.findById(id);
+    if (!offer) {
+      res.status(404);
+      return next(new Error('Offer not found'));
+    }
+
+    offer.isActive = false;
+    offer.status = 'inactive';
+    await offer.save();
+
+    res.status(200).json({
+      success: true,
+      message: 'Offer soft-deleted successfully',
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * @desc    Restore Soft Deleted Offer (Admin only)
+ * @route   PATCH /api/offers/:id/restore
+ * @access  Private (Admin/Superadmin)
+ */
+export const restoreOffer = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    const offer = await Offer.findById(id);
+    if (!offer) {
+      res.status(404);
+      return next(new Error('Offer not found'));
+    }
+
+    // Before restoring, check if it would overlap with other active offers
+    const overlapping = await checkOverlap(offer.startDate, offer.endDate, id);
+    if (overlapping) {
+      res.status(400);
+      return next(
+        new Error(`Cannot restore. This offer overlaps with an existing active offer: "${overlapping.title}"`)
+      );
+    }
+
+    offer.isActive = true;
+    offer.status = 'active';
+    await offer.save();
+
+    res.status(200).json({
+      success: true,
+      message: 'Offer restored successfully',
+      offer,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * @desc    Get all offers with sorting and pagination
+ * @route   GET /api/offers
+ * @access  Public / Private
+ */
+export const getAllOffers = async (req, res, next) => {
+  try {
+    const { page = 1, limit = 10, sort, includeInactive } = req.query;
+
+    const query = {};
+
+    // 1. Admin optional protect check: default view only shows active & valid current date ranges
+    const isAdmin = req.user && (req.user.role === 'admin' || req.user.role === 'superadmin');
+    if (isAdmin && includeInactive === 'true') {
+      // Admin sees everything
+    } else {
+      const currentDate = new Date();
+      query.isActive = true;
+      query.status = 'active';
+      query.startDate = { $lte: currentDate };
+      query.endDate = { $gte: currentDate };
+    }
+
+    // 2. Pagination calculation
+    const pageNum = Math.max(1, Number(page));
+    const limitNum = Math.max(1, Number(limit));
+    const skip = (pageNum - 1) * limitNum;
+
+    // 3. Sorting query
+    let sortQuery = { createdAt: -1 }; // default newest
+    if (sort) {
+      if (sort === 'oldest') sortQuery = { createdAt: 1 };
+      else if (sort === 'discount-high-low') sortQuery = { discountPercentage: -1 };
+      else if (sort === 'discount-low-high') sortQuery = { discountPercentage: 1 };
+    }
+
+    // 4. Database execution
+    const totalOffers = await Offer.countDocuments(query);
+    const offers = await Offer.find(query)
+      .sort(sortQuery)
+      .skip(skip)
+      .limit(limitNum);
+
+    const totalPages = Math.ceil(totalOffers / limitNum);
+
+    res.status(200).json({
+      success: true,
+      totalOffers,
+      currentPage: pageNum,
+      totalPages,
+      offers,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * @desc    Get single offer by ID
+ * @route   GET /api/offers/:id
+ * @access  Public
+ */
+export const getOfferById = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    const offer = await Offer.findById(id);
+    if (!offer) {
+      res.status(404);
+      return next(new Error('Offer not found'));
+    }
+
+    // Verify access if public user
+    const isAdmin = req.user && (req.user.role === 'admin' || req.user.role === 'superadmin');
+    if (!isAdmin) {
+      const currentDate = new Date();
+      const isValidDate = offer.startDate <= currentDate && offer.endDate >= currentDate;
+      if (!offer.isActive || offer.status !== 'active' || !isValidDate) {
+        res.status(404);
+        return next(new Error('Offer not found or has expired'));
+      }
+    }
+
+    res.status(200).json({
+      success: true,
+      offer,
+    });
+  } catch (error) {
+    next(error);
+  }
+};

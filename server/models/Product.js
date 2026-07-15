@@ -53,13 +53,36 @@ const productSchema = new mongoose.Schema(
       max: [100, 'Discount cannot exceed 100%'],
     },
     images: {
-      type: [String],
+      type: [
+        {
+          public_id: {
+            type: String,
+            required: [true, 'Image public ID is required'],
+          },
+          url: {
+            type: String,
+            required: [true, 'Image URL is required'],
+          },
+          width: {
+            type: Number,
+          },
+          height: {
+            type: Number,
+          },
+          format: {
+            type: String,
+          },
+          bytes: {
+            type: Number,
+          },
+        },
+      ],
       required: [true, 'At least one product image is required'],
       validate: {
         validator: function (v) {
           return Array.isArray(v) && v.length > 0;
         },
-        message: 'A product must have at least one image url',
+        message: 'A product must have at least one image',
       },
     },
     sizes: {
@@ -142,11 +165,10 @@ const productSchema = new mongoose.Schema(
 );
 
 // Pre-save hook to calculate discount percentage automatically if not explicitly provided
-productSchema.pre('save', function (next) {
+productSchema.pre('save', function () {
   if (this.originalPrice && this.price && this.originalPrice > this.price) {
     this.discountPercentage = Math.round(((this.originalPrice - this.price) / this.originalPrice) * 100);
   }
-  next();
 });
 
 const Product = mongoose.model('Product', productSchema);

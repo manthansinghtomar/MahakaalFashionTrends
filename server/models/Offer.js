@@ -12,8 +12,34 @@ const offerSchema = new mongoose.Schema(
       required: [true, 'Offer description is required'],
     },
     bannerImage: {
+      public_id: {
+        type: String,
+        required: [true, 'Banner image public ID is required'],
+      },
+      url: {
+        type: String,
+        required: [true, 'Banner image URL is required'],
+      },
+      width: {
+        type: Number,
+      },
+      height: {
+        type: Number,
+      },
+      format: {
+        type: String,
+      },
+      bytes: {
+        type: Number,
+      },
+    },
+    status: {
       type: String,
-      required: [true, 'Banner image path is required'],
+      enum: {
+        values: ['active', 'inactive'],
+        message: '{VALUE} is not a valid offer status',
+      },
+      default: 'active',
     },
     discountPercentage: {
       type: Number,

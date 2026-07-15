@@ -31,11 +31,51 @@ const contactSchema = new mongoose.Schema(
       type: String,
       required: [true, 'Message is required'],
     },
+    status: {
+      type: String,
+      enum: {
+        values: ['unread', 'read', 'archived'],
+        message: '{VALUE} is not a valid status',
+      },
+      default: 'unread',
+    },
+    isRead: {
+      type: Boolean,
+      default: false,
+    },
+    isArchived: {
+      type: Boolean,
+      default: false,
+    },
+    adminReply: {
+      type: String,
+      default: '',
+    },
+    repliedAt: {
+      type: Date,
+    },
+    repliedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Admin',
+      default: null,
+    },
+    isDeleted: {
+      type: Boolean,
+      default: false,
+    },
+    deletedAt: {
+      type: Date,
+    },
   },
   {
     timestamps: true,
   }
 );
+
+// Performance indexes for admin queries
+contactSchema.index({ email: 1 });
+contactSchema.index({ status: 1 });
+contactSchema.index({ createdAt: -1 });
 
 const Contact = mongoose.model('Contact', contactSchema);
 export default Contact;

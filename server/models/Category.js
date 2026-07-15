@@ -17,8 +17,26 @@ const categorySchema = new mongoose.Schema(
       index: true,
     },
     image: {
-      type: String,
-      default: '',
+      public_id: {
+        type: String,
+        required: [true, 'Image public ID is required'],
+      },
+      url: {
+        type: String,
+        required: [true, 'Image URL is required'],
+      },
+      width: {
+        type: Number,
+      },
+      height: {
+        type: Number,
+      },
+      format: {
+        type: String,
+      },
+      bytes: {
+        type: Number,
+      },
     },
     description: {
       type: String,
@@ -27,6 +45,19 @@ const categorySchema = new mongoose.Schema(
     displayOrder: {
       type: Number,
       default: 0,
+    },
+    parent: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Category',
+      default: null,
+    },
+    status: {
+      type: String,
+      enum: {
+        values: ['active', 'inactive'],
+        message: '{VALUE} is not a valid category status',
+      },
+      default: 'active',
     },
     isActive: {
       type: Boolean,
