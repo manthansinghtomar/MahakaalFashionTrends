@@ -133,20 +133,7 @@ export const ADMIN_NAV_LINKS = [
     showInFooter: false,
     showInMobileMenu: false,
     isComingSoon: false,
-    children: [
-      {
-        label: 'All Products',
-        href: ROUTES.ADMIN_PRODUCTS,
-        requiresAuth: true,
-        roles: ['admin', 'superadmin'],
-      },
-      {
-        label: 'Add Product',
-        href: `${ROUTES.ADMIN_PRODUCTS}/new`,
-        requiresAuth: true,
-        roles: ['admin', 'superadmin'],
-      },
-    ],
+    children: [],
   },
   {
     label: 'Categories',
@@ -158,20 +145,7 @@ export const ADMIN_NAV_LINKS = [
     showInFooter: false,
     showInMobileMenu: false,
     isComingSoon: false,
-    children: [
-      {
-        label: 'All Categories',
-        href: ROUTES.ADMIN_CATEGORIES,
-        requiresAuth: true,
-        roles: ['admin', 'superadmin'],
-      },
-      {
-        label: 'Add Category',
-        href: `${ROUTES.ADMIN_CATEGORIES}/new`,
-        requiresAuth: true,
-        roles: ['admin', 'superadmin'],
-      },
-    ],
+    children: [],
   },
   {
     label: 'Offers',

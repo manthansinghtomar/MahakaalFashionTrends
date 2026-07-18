@@ -12,10 +12,10 @@ export const Logo = ({ className = '' }) => {
       </div>
       {/* Full Brand Name in two lines on the right */}
       <div className="flex flex-col text-left leading-none flex-grow">
-        <span className="text-sm font-bold tracking-[0.18em] text-neutral-950">
+        <span className="text-md font-semibold tracking-[0.18em] text-neutral-950">
           MAHAKAAL
         </span>
-        <span className="text-[8px] font-medium tracking-[0.25em] text-neutral-400 mt-0.5 uppercase">
+        <span className="text-[11px] font-semibold tracking-[0.25em] text-neutral-500 mt-0.5 uppercase">
           Fashion Trends
         </span>
       </div>

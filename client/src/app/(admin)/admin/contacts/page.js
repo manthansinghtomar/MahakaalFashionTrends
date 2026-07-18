@@ -1,17 +1,15 @@
 import React from 'react';
+import ContactsClient from '@/components/admin/contacts/ContactsClient.jsx';
 import { generatePageMetadata } from '@/utils/metadata.js';
 
 export const metadata = generatePageMetadata({
-  title: 'Customer Inquiries',
-  description: 'Review and manage contact submissions, support feedback, and queries.',
-  keywords: ['contacts manager', 'user feedback', 'admin inquiry panel'],
+  title: 'Inquiries Management',
+  description: 'Monitor and review support inquiries, customer feedback submissions, and queries.',
+  keywords: ['customer inquiries logs', 'admin contacts console', 'message logs directory'],
 });
 
 export default function AdminContactsPage() {
   return (
-    <div className="p-8">
-      <h1 className="text-2xl font-bold text-neutral-800">Customer Inquiries</h1>
-      <p className="mt-2 text-sm text-neutral-500">Manage message logs submitted through the support portal.</p>
-    </div>
+    <ContactsClient />
   );
 }

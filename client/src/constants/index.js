@@ -5,3 +5,5 @@ export * from './footer.js';
 export * from './hero.js';
 export * from './categories.js';
 export * from './products.js';
+export * from './features.js';
+export * from './newsletter.js';

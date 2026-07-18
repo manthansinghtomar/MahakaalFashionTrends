@@ -67,6 +67,8 @@ export const API_ENDPOINTS = {
     ADMIN_LOGIN: '/auth/admin/login',
     LOGOUT: '/auth/logout',
     ME: '/auth/me',
+    UPDATE_PROFILE: '/auth/profile',
+    CHANGE_PASSWORD: '/auth/change-password',
   },
   PRODUCTS: {
     BASE: '/products',

@@ -1,5 +1,7 @@
 import React from 'react';
 import { generatePageMetadata } from '@/utils/metadata.js';
+import AuthLayout from '@/components/auth/AuthLayout.jsx';
+import RegisterForm from '@/components/auth/RegisterForm.jsx';
 
 export const metadata = generatePageMetadata({
   title: 'Register',
@@ -9,9 +11,8 @@ export const metadata = generatePageMetadata({
 
 export default function RegisterPage() {
   return (
-    <div className="p-8 text-center max-w-xl mx-auto">
-      <h1 className="text-2xl font-bold text-neutral-800">Register</h1>
-      <p className="mt-2 text-sm text-neutral-500">Create a new customer account.</p>
-    </div>
+    <AuthLayout type="register">
+      <RegisterForm />
+    </AuthLayout>
   );
 }

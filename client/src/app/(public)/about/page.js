@@ -1,6 +1,14 @@
 import React from 'react';
 
 import { generatePageMetadata } from '@/utils/metadata.js';
+import {
+  AboutHero,
+  BrandStory,
+  MissionVision,
+  Craftsmanship,
+  BrandValues,
+  AboutCTA,
+} from '@/components/about/index.js';
 
 export const metadata = generatePageMetadata({
   title: 'About Us',
@@ -10,9 +18,14 @@ export const metadata = generatePageMetadata({
 
 export default function AboutPage() {
   return (
-    <div className="p-8 text-center max-w-xl mx-auto">
-      <h1 className="text-2xl font-bold text-neutral-800">About Us</h1>
-      <p className="mt-2 text-sm text-neutral-500">Mahakaal Fashion Trends Brand legacy.</p>
+    <div className="flex flex-col w-full bg-neutral-50 min-h-screen">
+      <AboutHero />
+      <BrandStory />
+      <MissionVision />
+      <Craftsmanship />
+      <BrandValues />
+      <AboutCTA />
     </div>
   );
 }
+

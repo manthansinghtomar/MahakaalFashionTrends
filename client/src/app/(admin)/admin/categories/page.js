@@ -1,17 +1,15 @@
 import React from 'react';
+import CategoriesClient from '@/components/admin/categories/CategoriesClient.jsx';
 import { generatePageMetadata } from '@/utils/metadata.js';
 
 export const metadata = generatePageMetadata({
-  title: 'Manage Categories',
-  description: 'Organize and structure your store with categories.',
-  keywords: ['category management', 'catalog layout', 'admin categories'],
+  title: 'Categories Management',
+  description: 'Manage brand ethnic apparel categories, adjust list orders, and customize collection description directories.',
+  keywords: ['catalog categorizations', 'admin categories console', 'collection directories configuration'],
 });
 
 export default function AdminCategoriesPage() {
   return (
-    <div className="p-8">
-      <h1 className="text-2xl font-bold text-neutral-800">Manage Categories</h1>
-      <p className="mt-2 text-sm text-neutral-500">Manage store classifications and collections.</p>
-    </div>
+    <CategoriesClient />
   );
 }

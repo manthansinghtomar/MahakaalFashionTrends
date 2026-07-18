@@ -1,4 +1,5 @@
 import React from 'react';
+import DashboardClient from '@/components/admin/DashboardClient.jsx';
 import { generatePageMetadata } from '@/utils/metadata.js';
 
 export const metadata = generatePageMetadata({
@@ -9,9 +10,6 @@ export const metadata = generatePageMetadata({
 
 export default function AdminDashboardPage() {
   return (
-    <div className="p-8">
-      <h1 className="text-2xl font-bold text-neutral-800">Admin Dashboard</h1>
-      <p className="mt-2 text-sm text-neutral-500">Welcome to the administration console.</p>
-    </div>
+    <DashboardClient />
   );
 }

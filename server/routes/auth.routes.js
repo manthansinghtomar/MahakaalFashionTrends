@@ -5,6 +5,8 @@ import {
   loginAdmin,
   getCurrentUser,
   logoutUser,
+  updateProfile,
+  changePassword,
 } from '../controllers/auth.controller.js';
 import { protect } from '../middleware/authMiddleware.js';
 
@@ -18,5 +20,7 @@ router.post('/logout', logoutUser);
 
 // Protected auth routes
 router.get('/me', protect, getCurrentUser);
+router.put('/profile', protect, updateProfile);
+router.put('/change-password', protect, changePassword);
 
 export default router;

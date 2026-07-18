@@ -444,3 +444,28 @@ export const getProductBySlug = async (req, res, next) => {
     next(error);
   }
 };
+
+/**
+ * @desc    Get recent approved product reviews (Public)
+ * @route   GET /api/products/reviews/recent
+ * @access  Public
+ */
+export const getRecentReviews = async (req, res, next) => {
+  try {
+    const limit = parseInt(req.query.limit) || 6;
+    const reviews = await Review.find()
+      .populate('user', 'fullName profileImage')
+      .populate('product', 'name slug')
+      .sort({ createdAt: -1 })
+      .limit(limit);
+
+    res.status(200).json({
+      success: true,
+      count: reviews.length,
+      reviews,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+

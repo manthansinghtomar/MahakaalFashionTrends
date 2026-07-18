@@ -21,6 +21,14 @@ export const authService = {
   getCurrentUser: async () => {
     return api.get(API_ENDPOINTS.AUTH.ME);
   },
+
+  updateProfile: async (profileData) => {
+    return api.put(API_ENDPOINTS.AUTH.UPDATE_PROFILE, profileData);
+  },
+
+  changePassword: async (passwordData) => {
+    return api.put(API_ENDPOINTS.AUTH.CHANGE_PASSWORD, passwordData);
+  },
 };
 
 export default authService;

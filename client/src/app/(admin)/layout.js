@@ -1,6 +1,16 @@
 import React from 'react';
-import { AdminLayout } from '@/components/layout/index.js';
+import ProtectedRoute from '@/components/auth/ProtectedRoute.jsx';
+import AdminLayout from '@/components/admin/AdminLayout.jsx';
 
+/**
+ * Admin Panel layout entry.
+ * Secures all administrative sub-pages by verifying admin roles,
+ * and renders the collateral Sidebar/Topbar workspace layouts.
+ */
 export default function AdminPageLayout({ children }) {
-  return <AdminLayout>{children}</AdminLayout>;
+  return (
+    <ProtectedRoute allowedRoles={['admin', 'superadmin']}>
+      <AdminLayout>{children}</AdminLayout>
+    </ProtectedRoute>
+  );
 }

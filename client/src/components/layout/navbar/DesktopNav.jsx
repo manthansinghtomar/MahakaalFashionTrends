@@ -20,7 +20,7 @@ export const DesktopNav = React.memo(() => {
   return (
     <nav className="hidden md:flex items-center gap-10" aria-label="Main Navigation">
       {navbarLinks.map((link) => {
-        const isActive = pathname === link.href;
+        const isActive = link.href === '/' ? pathname === '/' : pathname.startsWith(link.href);
         return (
           <Link
             key={link.href}

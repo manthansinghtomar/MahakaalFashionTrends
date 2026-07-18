@@ -15,14 +15,17 @@ export const ProtectedRoute = ({ children, allowedRoles = [] }) => {
   useEffect(() => {
     if (!loading) {
       if (!user) {
-        router.replace('/login');
+        const redirectUrl = window.location.pathname + window.location.search;
+        router.replace(`/login?redirect=${encodeURIComponent(redirectUrl)}`);
       } else if (allowedRoles.length > 0 && !allowedRoles.includes(user.role)) {
         router.replace('/');
       }
     }
   }, [user, loading, router, allowedRoles]);
 
-  if (loading || !user) {
+  const isAuthorized = user && (allowedRoles.length === 0 || allowedRoles.includes(user.role));
+
+  if (loading || !isAuthorized) {
     return <Loading fullScreen />;
   }
 
@@ -30,3 +33,4 @@ export const ProtectedRoute = ({ children, allowedRoles = [] }) => {
 };
 
 export default ProtectedRoute;
+

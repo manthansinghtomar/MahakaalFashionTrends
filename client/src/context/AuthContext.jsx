@@ -13,8 +13,14 @@ export const AuthProvider = ({ children }) => {
     try {
       setLoading(true);
       const res = await authService.getCurrentUser();
-      if (res && res.success && res.user) {
-        setUser(res.user);
+      if (res && res.success) {
+        if (res.user) {
+          setUser(res.user);
+        } else if (res.admin) {
+          setUser({ ...res.admin, role: res.admin.role || 'admin' });
+        } else {
+          setUser(null);
+        }
       } else {
         setUser(null);
       }
@@ -45,13 +51,51 @@ export const AuthProvider = ({ children }) => {
     return res;
   };
 
+  const register = async (userData) => {
+    const res = await authService.register(userData);
+    if (res && res.success && res.user) {
+      setUser(res.user);
+    }
+    return res;
+  };
+
   const logout = async () => {
     await authService.logout();
     setUser(null);
   };
 
+  const updateProfile = async (profileData) => {
+    const res = await authService.updateProfile(profileData);
+    if (res && res.success) {
+      if (res.user) {
+        setUser(res.user);
+      } else if (res.admin) {
+        setUser({ ...res.admin, role: res.admin.role || 'admin' });
+      }
+    }
+    return res;
+  };
+
+  const changePassword = async (passwordData) => {
+    return await authService.changePassword(passwordData);
+  };
+
   return (
-    <AuthContext.Provider value={{ user, loading, login, adminLogin, logout, checkAuth }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        currentUser: user,
+        isAuthenticated: !!user,
+        loading,
+        login,
+        adminLogin,
+        logout,
+        register,
+        checkAuth,
+        updateProfile,
+        changePassword,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

@@ -1,18 +1,46 @@
 import React from 'react';
-
+import ProductDetailsClient from '@/components/product-details/ProductDetailsClient.jsx';
+import productService from '@/services/product.service.js';
 import { generatePageMetadata } from '@/utils/metadata.js';
 
-export const metadata = generatePageMetadata({
-  title: 'Product Details',
-  description: 'Detailed view of selected ethnic kurtas and traditional outfits.',
-  keywords: ['ethnic kurta fit', 'traditional sizing', 'care instructions'],
-});
+/**
+ * Dynamic metadata generator (Next.js Server Side).
+ * Safely fetches product details to construct title, description, and keywords.
+ * Includes catch blocks to prevent build failures if the database/backend is unavailable during compilation.
+ */
+export async function generateMetadata({ params }) {
+  const { slug } = await params;
+  try {
+    const response = await productService.getProductBySlug(slug);
+    if (response && response.success && response.product) {
+      const { name, description, brand, category } = response.product;
+      const categoryName = typeof category === 'object' && category ? category.name : '';
 
-export default function ProductDetailPage({ params }) {
+      return generatePageMetadata({
+        title: name,
+        description: description ? description.substring(0, 160) : 'Premium ethnic clothing detail.',
+        keywords: [brand, categoryName, 'traditional menswear', 'kurta fit'].filter(Boolean),
+      });
+    }
+  } catch (err) {
+    // Fail silently to prevent build failures during build-time dynamic routes scanning
+  }
+
+  // Fallback metadata
+  return generatePageMetadata({
+    title: 'Product Details',
+    description: 'Detailed view of our selected ethnic kurtas and traditional designer outfits.',
+    keywords: ['ethnic kurta fit', 'traditional sizing', 'care instructions'],
+  });
+}
+
+/**
+ * Product detail page server-side entry.
+ * Awaits Next.js params and renders the ProductDetailsClient coordinator.
+ */
+export default async function ProductDetailPage({ params }) {
+  const { slug } = await params;
   return (
-    <div className="p-8 text-center max-w-xl mx-auto">
-      <h1 className="text-2xl font-bold text-neutral-800">Product Detail</h1>
-      <p className="mt-2 text-sm text-neutral-500">Details for item slug: {params?.slug || 'Item Slug'}</p>
-    </div>
+    <ProductDetailsClient slug={slug} />
   );
 }

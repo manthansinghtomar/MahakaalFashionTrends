@@ -6,6 +6,7 @@ import {
   restoreProduct,
   getAllProducts,
   getProductBySlug,
+  getRecentReviews,
 } from '../controllers/product.controller.js';
 import { protect, authorizeRoles } from '../middleware/authMiddleware.js';
 import jwt from 'jsonwebtoken';
@@ -43,6 +44,7 @@ const optionalProtect = async (req, res, next) => {
 };
 
 // Public catalog routes
+router.get('/reviews/recent', getRecentReviews);
 router.get('/', optionalProtect, getAllProducts);
 router.get('/:slug', getProductBySlug);
 

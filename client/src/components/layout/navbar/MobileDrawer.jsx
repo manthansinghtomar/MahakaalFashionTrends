@@ -125,7 +125,7 @@ export const MobileDrawer = ({
             {links.map((link) => {
               const hasChildren = link.children && link.children.length > 0;
               const isExpanded = !!expandedMenus[link.label];
-              const isActive = pathname === link.href;
+              const isActive = link.href === '/' ? pathname === '/' : pathname.startsWith(link.href);
 
               return (
                 <li key={link.label} className="block">

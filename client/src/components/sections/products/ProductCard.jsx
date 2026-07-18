@@ -22,6 +22,7 @@ export const ProductCard = ({
     name,
     slug,
     image,
+    images = [],
     price,
     originalPrice,
     discountPercentage,
@@ -35,8 +36,10 @@ export const ProductCard = ({
 
   if (!slug) return null;
 
+  const displayImage = image || images[0]?.url || '';
+
   // Support local relative paths and remote CDN/Cloudinary URLs dynamically
-  const isRemote = image && (image.startsWith('http://') || image.startsWith('https://'));
+  const isRemote = displayImage && (displayImage.startsWith('http://') || displayImage.startsWith('https://'));
 
   // Resolve populated category objects to name string safely
   const categoryName = typeof category === 'object' && category ? category.name : category;
@@ -67,17 +70,17 @@ export const ProductCard = ({
         </button>
         */}
 
-        {image ? (
+        {displayImage ? (
           isRemote ? (
             <img
-              src={image}
+              src={displayImage}
               alt={name}
               className="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
               loading="lazy"
             />
           ) : (
             <Image
-              src={image}
+              src={displayImage}
               alt={name}
               fill
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"

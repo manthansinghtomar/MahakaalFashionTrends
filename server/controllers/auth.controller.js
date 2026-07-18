@@ -208,6 +208,7 @@ export const getCurrentUser = async (req, res, next) => {
         _id: req.user._id,
         fullName: req.user.fullName,
         email: req.user.email,
+        phone: req.user.phone || '',
         role: req.user.role,
         permissions: req.user.permissions,
         isActive: req.user.isActive,
@@ -253,3 +254,191 @@ export const logoutUser = async (req, res, next) => {
     next(error);
   }
 };
+
+/**
+ * @desc    Update authenticated user/admin profile
+ * @route   PUT /api/auth/profile
+ * @access  Private
+ */
+export const updateProfile = async (req, res, next) => {
+  try {
+    if (!req.user) {
+      res.status(401);
+      return next(new Error('Not authorized, session data missing'));
+    }
+
+    const { fullName, phone, email } = req.body;
+
+    // Validation & Sanitization
+    if (fullName !== undefined && (typeof fullName !== 'string' || !fullName.trim())) {
+      res.status(400);
+      return next(new Error('Please provide a valid full name'));
+    }
+
+    if (email !== undefined) {
+      const emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+      if (typeof email !== 'string' || !emailRegex.test(email.trim().toLowerCase())) {
+        res.status(400);
+        return next(new Error('Please enter a valid email address'));
+      }
+    }
+
+    const sanitizedFullName = fullName ? fullName.trim() : undefined;
+    const sanitizedPhone = phone !== undefined ? String(phone).trim() : undefined;
+    const sanitizedEmail = email ? email.trim().toLowerCase() : undefined;
+
+    const role = req.user.role;
+    const responsePayload = {
+      success: true,
+      message: 'Profile updated successfully',
+    };
+
+    if (role === 'admin' || role === 'superadmin') {
+      const admin = await Admin.findById(req.user._id);
+      if (!admin) {
+        res.status(404);
+        return next(new Error('Administrator account not found'));
+      }
+
+      if (sanitizedFullName) {
+        admin.fullName = sanitizedFullName;
+      }
+      if (sanitizedPhone !== undefined) {
+        admin.phone = sanitizedPhone;
+      }
+
+      // Check email uniqueness if email changed
+      if (sanitizedEmail && sanitizedEmail !== admin.email) {
+        const userExists = await User.findOne({ email: sanitizedEmail });
+        const adminExists = await Admin.findOne({ email: sanitizedEmail });
+        if (userExists || adminExists) {
+          res.status(400);
+          return next(new Error('Email is already registered by another account'));
+        }
+        admin.email = sanitizedEmail;
+      }
+      
+      const updatedAdmin = await admin.save();
+
+      responsePayload.admin = {
+        _id: updatedAdmin._id,
+        fullName: updatedAdmin.fullName,
+        email: updatedAdmin.email,
+        phone: updatedAdmin.phone,
+        role: updatedAdmin.role,
+        permissions: updatedAdmin.permissions,
+        isActive: updatedAdmin.isActive,
+      };
+    } else {
+      const user = await User.findById(req.user._id);
+      if (!user) {
+        res.status(404);
+        return next(new Error('User account not found'));
+      }
+
+      if (sanitizedFullName) {
+        user.fullName = sanitizedFullName;
+      }
+      if (sanitizedPhone !== undefined) {
+        user.phone = sanitizedPhone;
+      }
+
+      // Check email uniqueness if email changed
+      if (sanitizedEmail && sanitizedEmail !== user.email) {
+        const userExists = await User.findOne({ email: sanitizedEmail });
+        const adminExists = await Admin.findOne({ email: sanitizedEmail });
+        if (userExists || adminExists) {
+          res.status(400);
+          return next(new Error('Email is already registered by another account'));
+        }
+        user.email = sanitizedEmail;
+      }
+
+      const updatedUser = await user.save();
+
+      responsePayload.user = {
+        _id: updatedUser._id,
+        fullName: updatedUser.fullName,
+        email: updatedUser.email,
+        phone: updatedUser.phone,
+        profileImage: updatedUser.profileImage,
+        role: updatedUser.role,
+        isVerified: updatedUser.isVerified,
+        isBlocked: updatedUser.isBlocked,
+      };
+    }
+
+    res.status(200).json(responsePayload);
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * @desc    Change authenticated user/admin password
+ * @route   PUT /api/auth/change-password
+ * @access  Private
+ */
+export const changePassword = async (req, res, next) => {
+  try {
+    if (!req.user) {
+      res.status(401);
+      return next(new Error('Not authorized, session data missing'));
+    }
+
+    const { currentPassword, newPassword, confirmPassword } = req.body;
+
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      res.status(400);
+      return next(new Error('Please provide current password, new password, and confirmation'));
+    }
+
+    if (newPassword.length < 6) {
+      res.status(400);
+      return next(new Error('New password must be at least 6 characters long'));
+    }
+
+    if (newPassword !== confirmPassword) {
+      res.status(400);
+      return next(new Error('New passwords do not match'));
+    }
+
+    if (newPassword === currentPassword) {
+      res.status(400);
+      return next(new Error('New password cannot be the same as the current password'));
+    }
+
+    const role = req.user.role;
+    let dbUser;
+
+    if (role === 'admin' || role === 'superadmin') {
+      dbUser = await Admin.findById(req.user._id).select('+password');
+    } else {
+      dbUser = await User.findById(req.user._id).select('+password');
+    }
+
+    if (!dbUser) {
+      res.status(404);
+      return next(new Error('Account not found'));
+    }
+
+    // Verify current password
+    const isMatch = await dbUser.matchPassword(currentPassword);
+    if (!isMatch) {
+      res.status(400);
+      return next(new Error('Incorrect current password'));
+    }
+
+    // Set new password (will be hashed automatically in pre-save hook)
+    dbUser.password = newPassword;
+    await dbUser.save();
+
+    res.status(200).json({
+      success: true,
+      message: 'Password changed successfully',
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+

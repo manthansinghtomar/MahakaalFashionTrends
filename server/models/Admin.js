@@ -40,6 +40,11 @@ const adminSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
+    phone: {
+      type: String,
+      trim: true,
+      default: '',
+    },
   },
   {
     timestamps: true,

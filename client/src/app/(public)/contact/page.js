@@ -1,6 +1,12 @@
 import React from 'react';
 
 import { generatePageMetadata } from '@/utils/metadata.js';
+import {
+  ContactHero,
+  ContactInfo,
+  ContactMap,
+  ContactPageClient,
+} from '@/components/contact/index.js';
 
 export const metadata = generatePageMetadata({
   title: 'Contact Us',
@@ -10,9 +16,13 @@ export const metadata = generatePageMetadata({
 
 export default function ContactPage() {
   return (
-    <div className="p-8 text-center max-w-xl mx-auto">
-      <h1 className="text-2xl font-bold text-neutral-800">Contact Us</h1>
-      <p className="mt-2 text-sm text-neutral-500">Reach out to our customer support office.</p>
+    <div className="flex flex-col w-full bg-neutral-50 min-h-screen">
+      <ContactHero />
+      <ContactPageClient
+        contactInfo={<ContactInfo />}
+        contactMap={<ContactMap />}
+      />
     </div>
   );
 }
+
