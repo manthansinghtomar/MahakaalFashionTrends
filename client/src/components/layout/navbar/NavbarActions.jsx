@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext.jsx';
 import { ROUTES } from '@/constants/index.js';
 import { HeartIcon, CartIcon, UserIcon, BellIcon } from './Icons.jsx';
+import ConfirmDialog from '@/components/ui/ConfirmDialog.jsx';
 
 /**
  * NavbarActions handles auth states (Loading/Guest/Auth) and badge counts.
@@ -16,6 +17,8 @@ export const NavbarActions = ({
 }) => {
   const { user, loading, logout } = useAuth();
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+  const [loggingOut, setLoggingOut] = useState(false);
   const dropdownRef = useRef(null);
 
   useEffect(() => {
@@ -28,12 +31,15 @@ export const NavbarActions = ({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const handleLogout = async () => {
+  const handleConfirmLogout = async () => {
+    setLoggingOut(true);
     try {
       await logout();
-      setDropdownOpen(false);
+      setShowLogoutConfirm(false);
     } catch (err) {
       console.error('Logout failed:', err);
+    } finally {
+      setLoggingOut(false);
     }
   };
 
@@ -111,7 +117,10 @@ export const NavbarActions = ({
               </Link>
             )}
             <button
-              onClick={handleLogout}
+              onClick={() => {
+                setDropdownOpen(false);
+                setShowLogoutConfirm(true);
+              }}
               className="block w-full px-4 py-2 text-left text-sm text-neutral-700 hover:bg-neutral-50 border-t border-neutral-100"
             >
               Sign Out
@@ -170,6 +179,18 @@ export const NavbarActions = ({
 
       {/* 4. Auth State Handler */}
       {renderAuthSection()}
+
+      <ConfirmDialog
+        isOpen={showLogoutConfirm}
+        onClose={() => setShowLogoutConfirm(false)}
+        onConfirm={handleConfirmLogout}
+        title="Confirm Logout"
+        message="Are you sure you want to log out?"
+        confirmText="Logout"
+        cancelText="Cancel"
+        loading={loggingOut}
+        variant="primary"
+      />
     </div>
   );
 };

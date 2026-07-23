@@ -9,6 +9,7 @@ import EmptyState from '@/components/ui/EmptyState.jsx';
  */
 export const ProductsTable = ({
   products = [],
+  onView,
   onEdit,
   onDelete,
 }) => {
@@ -20,6 +21,13 @@ export const ProductsTable = ({
       month: 'short',
       year: 'numeric',
     });
+  };
+
+  const formatRupees = (val) => {
+    if (val === undefined || val === null || val === '') return '0';
+    return new Intl.NumberFormat('en-IN', {
+      maximumFractionDigits: 0,
+    }).format(val);
   };
 
   if (products.length === 0) {
@@ -40,7 +48,6 @@ export const ProductsTable = ({
           <thead>
             <tr className="bg-neutral-50 border-b border-neutral-100 text-neutral-400 font-bold uppercase tracking-wider">
               <th className="p-4 pl-6">Product</th>
-              <th className="p-4">SKU</th>
               <th className="p-4">Category</th>
               <th className="p-4">Price</th>
               <th className="p-4">Stock</th>
@@ -85,20 +92,17 @@ export const ProductsTable = ({
                     </div>
                   </td>
 
-                  {/* SKU */}
-                  <td className="p-4 font-semibold text-neutral-500 uppercase">{prod.sku}</td>
-
                   {/* Category */}
                   <td className="p-4 font-semibold text-neutral-600">
                     {prod.category?.name || 'Uncategorized'}
                   </td>
 
-                  {/* Price */}
+                  {/* Price in Rupees */}
                   <td className="p-4">
-                    <span className="font-extrabold text-neutral-900 block">${prod.price?.toFixed(2)}</span>
+                    <span className="font-extrabold text-neutral-900 block">₹{formatRupees(prod.price)}</span>
                     {prod.originalPrice > prod.price && (
                       <span className="text-[10px] text-neutral-400 line-through font-semibold block">
-                        ${prod.originalPrice?.toFixed(2)}
+                        ₹{formatRupees(prod.originalPrice)}
                       </span>
                     )}
                   </td>
@@ -116,16 +120,15 @@ export const ProductsTable = ({
 
                   {/* Actions */}
                   <td className="p-4 pr-6 text-right space-x-2.5 whitespace-nowrap">
-                    {/* View Button -> links to public details */}
-                    <a
-                      href={`/products/${prod.slug}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center text-xs font-bold text-neutral-500 hover:text-neutral-900 transition-colors"
-                      title="View product page in new tab"
+                    {/* View Modal Trigger Button */}
+                    <button
+                      type="button"
+                      onClick={() => onView && onView(prod)}
+                      className="inline-flex items-center text-xs font-bold text-neutral-600 hover:text-neutral-900 hover:underline transition-colors"
+                      title="View product details modal"
                     >
                       View
-                    </a>
+                    </button>
 
                     {/* Edit Button */}
                     <button

@@ -1,5 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
+import { Logo } from '@/components/common/Logo.jsx';
 
 /**
  * Premium Layout container for Auth pages (Login / Register).
@@ -20,11 +21,8 @@ export const AuthLayout = ({ children, type = 'login' }) => {
 
         {/* Top Logo */}
         <div className="relative z-10">
-          <Link href="/" className="inline-flex items-center gap-2.5 focus:outline-none">
-            <span className="text-xl font-black uppercase tracking-[0.3em] text-white">
-              MAHAKAAL
-            </span>
-            <span className="w-2.5 h-2.5 rounded-full bg-secondary" />
+          <Link href="/" className="inline-flex items-center focus:outline-none">
+            <Logo variant="dark" imgSize="w-20 h-20 lg:w-24 lg:h-24" />
           </Link>
         </div>
 
@@ -52,17 +50,20 @@ export const AuthLayout = ({ children, type = 'login' }) => {
       {/* 2. Right Interactive Form Panel */}
       <div className="w-full lg:w-1/2 flex flex-col justify-center items-center p-6 sm:p-12 md:p-16 relative">
         {/* Top Header Logo for mobile views */}
-        <div className="lg:hidden mb-8">
-          <Link href="/" className="inline-flex items-center gap-2 focus:outline-none">
-            <span className="text-lg font-black uppercase tracking-[0.25em] text-neutral-900">
-              MAHAKAAL
-            </span>
-            <span className="w-2 h-2 rounded-full bg-secondary" />
+        <div className="lg:hidden mb-6">
+          <Link href="/" className="inline-flex items-center focus:outline-none">
+            <Logo variant="light" imgSize="w-20 h-20" />
           </Link>
         </div>
 
         {/* Content Card Wrapper */}
         <div className="w-full max-w-md bg-white border border-neutral-100 rounded-3xl p-8 sm:p-10 shadow-xs">
+          {/* Centered Brand Emblem for Form Header */}
+          <div className="flex justify-center mb-6">
+            <Link href="/" className="inline-flex items-center focus:outline-none">
+              <Logo variant="light" imgSize="w-20 h-20 sm:w-24 sm:h-24" showText={false} />
+            </Link>
+          </div>
           {children}
         </div>
       </div>

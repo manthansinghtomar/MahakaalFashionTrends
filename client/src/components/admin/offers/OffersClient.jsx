@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import Loading from '@/components/ui/Loading.jsx';
 import Error from '@/components/ui/Error.jsx';
 import offerService from '@/services/offer.service.js';
+import toast from '@/utils/toast.js';
 
 import OffersToolbar from './OffersToolbar.jsx';
 import OffersTable from './OffersTable.jsx';
@@ -113,6 +114,7 @@ export const OffersClient = () => {
           setIsFormOpen(false);
           setEditingOffer(null);
           fetchOffers();
+          toast.success('Offer updated successfully');
         }
       } else {
         // Create Mode
@@ -120,10 +122,13 @@ export const OffersClient = () => {
         if (response && response.success) {
           setIsFormOpen(false);
           fetchOffers();
+          toast.success('Offer created successfully');
         }
       }
     } catch (err) {
-      throw new Error(err.response?.data?.message || err.message || 'Failed to save offer details.');
+      const msg = err.response?.data?.message || err.message || 'Failed to save offer details.';
+      toast.error(msg);
+      throw new Error(msg);
     } finally {
       setSubmittingOffer(false);
     }
@@ -140,9 +145,12 @@ export const OffersClient = () => {
         setIsDeleteOpen(false);
         setDeletingOffer(null);
         fetchOffers();
+        toast.success('Offer deleted successfully');
       }
     } catch (err) {
-      setDeleteError(err.response?.data?.message || err.message || 'An error occurred while deleting the offer.');
+      const msg = err.response?.data?.message || err.message || 'An error occurred while deleting the offer.';
+      setDeleteError(msg);
+      toast.error(msg);
     } finally {
       setDeletingStatus(false);
     }

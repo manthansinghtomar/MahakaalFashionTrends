@@ -96,10 +96,10 @@ export const getDashboardOverview = async (req, res, next) => {
       latestOffers,
     ] = await Promise.all([
       // Product statistics
-      Product.countDocuments(),
-      Product.countDocuments({ isActive: true }),
-      Product.countDocuments({ isActive: false }),
-      getMonthlyGrowth(Product),
+      Product.countDocuments({ isDeleted: { $ne: true } }),
+      Product.countDocuments({ isActive: true, isDeleted: { $ne: true } }),
+      Product.countDocuments({ isActive: false, isDeleted: { $ne: true } }),
+      getMonthlyGrowth(Product, { isDeleted: { $ne: true } }),
 
       // Category statistics
       Category.countDocuments(),
@@ -124,7 +124,7 @@ export const getDashboardOverview = async (req, res, next) => {
       getMonthlyGrowth(Contact, { isDeleted: false }),
 
       // Latest lists
-      Product.find()
+      Product.find({ isDeleted: { $ne: true } })
         .sort({ createdAt: -1 })
         .limit(5)
         .select('name sku price category stock isActive createdAt')

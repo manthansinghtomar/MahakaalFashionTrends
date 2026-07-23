@@ -22,8 +22,16 @@ export const productService = {
     return api.delete(`${API_ENDPOINTS.PRODUCTS.BASE}/${id}`);
   },
 
+  getDeletedProducts: async () => {
+    return api.get(`${API_ENDPOINTS.PRODUCTS.BASE}/deleted/list`);
+  },
+
   restoreProduct: async (id) => {
-    return api.patch(API_ENDPOINTS.PRODUCTS.RESTORE(id));
+    return api.patch(`${API_ENDPOINTS.PRODUCTS.BASE}/${id}/restore`);
+  },
+
+  permanentDeleteProduct: async (id) => {
+    return api.delete(`${API_ENDPOINTS.PRODUCTS.BASE}/${id}/permanent`);
   },
 };
 

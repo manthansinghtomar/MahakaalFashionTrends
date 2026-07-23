@@ -7,14 +7,16 @@ import Button from '@/components/ui/Button.jsx';
 import Input from '@/components/ui/Input.jsx';
 import toast from '@/utils/toast.js';
 import { handleApiError } from '@/utils/apiErrorHandler.js';
+import ConfirmDialog from '@/components/ui/ConfirmDialog.jsx';
 
 /**
  * Renders actions (Edit profile dialog, change password dialog, and Logout).
  */
-export const ProfileActions = () => {
+export const ProfileActions = ({ showSignOut = true, logoutRedirect = '/' }) => {
   const { currentUser, logout, updateProfile, changePassword } = useAuth();
   const router = useRouter();
   const [loggingOut, setLoggingOut] = useState(false);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
   // Modal display states
   const [isEditOpen, setIsEditOpen] = useState(false);
@@ -39,11 +41,12 @@ export const ProfileActions = () => {
 
   const isCustomer = currentUser && currentUser.role !== 'admin' && currentUser.role !== 'superadmin';
 
-  const handleLogout = async () => {
+  const handleConfirmLogout = async () => {
     setLoggingOut(true);
     try {
       await logout();
-      router.replace('/');
+      setShowLogoutConfirm(false);
+      router.replace(logoutRedirect);
     } catch (err) {
       console.error('Logout failed:', err);
       setLoggingOut(false);
@@ -105,7 +108,6 @@ export const ProfileActions = () => {
       };
       const res = await updateProfile(payload);
       if (res && res.success) {
-        toast.success('Profile updated successfully!');
         setIsEditOpen(false);
       }
     } catch (err) {
@@ -143,7 +145,6 @@ export const ProfileActions = () => {
       });
 
       if (res && res.success) {
-        toast.success('Password changed successfully!');
         setIsPasswordOpen(false);
         setPasswordForm({
           currentPassword: '',
@@ -182,15 +183,15 @@ export const ProfileActions = () => {
       </Button>
 
       {/* Logout Button */}
-      <Button
-        variant="danger"
-        onClick={handleLogout}
-        loading={loggingOut}
-        disabled={loggingOut}
-        className="w-full sm:w-auto rounded-xl bg-red-600 text-white hover:bg-red-700 font-bold uppercase tracking-wider text-xs px-6 py-3 transition-all duration-300"
-      >
-        Sign Out
-      </Button>
+      {showSignOut && (
+        <Button
+          variant="danger"
+          onClick={() => setShowLogoutConfirm(true)}
+          className="w-full sm:w-auto rounded-xl bg-red-600 text-white hover:bg-red-700 font-bold uppercase tracking-wider text-xs px-6 py-3 transition-all duration-300"
+        >
+          Sign Out
+        </Button>
+      )}
 
       {/* Edit Profile Modal */}
       {isEditOpen && (
@@ -274,6 +275,18 @@ export const ProfileActions = () => {
           </div>
         </div>
       )}
+      {/* Confirm Logout Dialog */}
+      <ConfirmDialog
+        isOpen={showLogoutConfirm}
+        onClose={() => setShowLogoutConfirm(false)}
+        onConfirm={handleConfirmLogout}
+        title="Confirm Logout"
+        message="Are you sure you want to log out?"
+        confirmText="Logout"
+        cancelText="Cancel"
+        loading={loggingOut}
+        variant="primary"
+      />
     </div>
   );
 };

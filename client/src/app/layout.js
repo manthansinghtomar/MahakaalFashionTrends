@@ -1,5 +1,6 @@
 import { Plus_Jakarta_Sans } from "next/font/google";
 import { AppProvider } from "@/context/AppProvider.jsx";
+import { ToastContainer } from "@/components/ui/ToastContainer.jsx";
 import "./globals.css";
 
 const jakarta = Plus_Jakarta_Sans({
@@ -32,8 +33,10 @@ export default function RootLayout({ children }) {
       <body className="antialiased bg-neutral-50 text-neutral-900 min-h-screen" suppressHydrationWarning>
         <AppProvider>
           {children}
+          <ToastContainer />
         </AppProvider>
       </body>
     </html>
   );
 }
+

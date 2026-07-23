@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import Loading from '@/components/ui/Loading.jsx';
 import Error from '@/components/ui/Error.jsx';
 import contactService from '@/services/contact.service.js';
+import toast from '@/utils/toast.js';
 
 import ContactsToolbar from './ContactsToolbar.jsx';
 import ContactsTable from './ContactsTable.jsx';
@@ -102,6 +103,7 @@ export const ContactsClient = () => {
               (item._id === msg._id || item.id === msg.id) ? { ...item, status: 'read' } : item
             )
           );
+          toast.success('Contact status updated');
         }
       } catch (err) {
         console.error('Failed to automatically mark inquiry as read on backend:', err);
@@ -120,9 +122,11 @@ export const ContactsClient = () => {
             (item._id === msg._id || item.id === msg.id) ? { ...item, status: 'archived' } : item
           )
         );
+        toast.success('Contact status updated');
       }
     } catch (err) {
       console.error('Failed to archive inquiry on backend:', err);
+      toast.error(err.response?.data?.message || err.message || 'Failed to archive inquiry.');
     }
   };
 
@@ -137,9 +141,12 @@ export const ContactsClient = () => {
         setIsDeleteOpen(false);
         setDeletingMessage(null);
         fetchMessages();
+        toast.success('Inquiry deleted successfully');
       }
     } catch (err) {
-      setDeleteError(err.response?.data?.message || err.message || 'An error occurred while deleting the message.');
+      const msg = err.response?.data?.message || err.message || 'An error occurred while deleting the message.';
+      setDeleteError(msg);
+      toast.error(msg);
     } finally {
       setDeletingStatus(false);
     }

@@ -3,6 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { Logo } from '@/components/common/Logo.jsx';
 import { ADMIN_NAV_LINKS } from '@/constants/index.js';
 
 /**
@@ -62,11 +63,8 @@ export const AdminSidebar = ({ isOpen, onClose }) => {
       
       {/* 1. Header Logo */}
       <div className="flex h-20 items-center justify-between px-6 border-b border-neutral-900 bg-neutral-950">
-        <Link href="/admin/dashboard" className="flex items-center gap-2 focus:outline-none">
-          <span className="text-sm font-black uppercase tracking-[0.25em] text-white">
-            Mahakaal Console
-          </span>
-          <span className="w-1.5 h-1.5 rounded-full bg-secondary" />
+        <Link href="/admin/dashboard" className="flex items-center focus:outline-none">
+          <Logo variant="dark" imgSize="w-12 h-12" />
         </Link>
         {/* Close Button on Mobile Drawer */}
         {onClose && (

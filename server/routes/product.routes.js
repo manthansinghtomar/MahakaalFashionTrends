@@ -4,6 +4,8 @@ import {
   updateProduct,
   deleteProduct,
   restoreProduct,
+  getDeletedProducts,
+  permanentDeleteProduct,
   getAllProducts,
   getProductBySlug,
   getRecentReviews,
@@ -43,6 +45,9 @@ const optionalProtect = async (req, res, next) => {
   next();
 };
 
+// Admin deleted items list route (must be before /:slug)
+router.get('/deleted/list', protect, authorizeRoles('admin', 'superadmin'), getDeletedProducts);
+
 // Public catalog routes
 router.get('/reviews/recent', getRecentReviews);
 router.get('/', optionalProtect, getAllProducts);
@@ -51,6 +56,7 @@ router.get('/:slug', getProductBySlug);
 // Private Admin-only mutating routes
 router.post('/', protect, authorizeRoles('admin', 'superadmin'), createProduct);
 router.put('/:id', protect, authorizeRoles('admin', 'superadmin'), updateProduct);
+router.delete('/:id/permanent', protect, authorizeRoles('admin', 'superadmin'), permanentDeleteProduct);
 router.delete('/:id', protect, authorizeRoles('admin', 'superadmin'), deleteProduct);
 router.patch('/:id/restore', protect, authorizeRoles('admin', 'superadmin'), restoreProduct);
 

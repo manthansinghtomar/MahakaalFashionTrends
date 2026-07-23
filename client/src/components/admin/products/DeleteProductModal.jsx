@@ -55,7 +55,7 @@ export const DeleteProductModal = ({
           </div>
           <div>
             <span className="font-extrabold text-neutral-800 block leading-tight">{product.name}</span>
-            <span className="text-[10px] text-neutral-400 font-bold uppercase tracking-wider block mt-0.5">SKU: {product.sku}</span>
+            <span className="text-[10px] text-neutral-400 font-bold uppercase tracking-wider block mt-0.5">{product.brand || 'Mahakaal'}</span>
           </div>
         </div>
 

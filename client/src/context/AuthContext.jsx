@@ -1,13 +1,19 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { usePathname, useRouter } from 'next/navigation';
 import authService from '../services/auth.service.js';
+import toast from '../utils/toast.js';
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const pathname = usePathname();
+  const router = useRouter();
+
+
 
   const checkAuth = async () => {
     try {
@@ -39,6 +45,7 @@ export const AuthProvider = ({ children }) => {
     const res = await authService.login(credentials);
     if (res && res.success && res.user) {
       setUser(res.user);
+      toast.success('Successfully logged in.');
     }
     return res;
   };
@@ -47,6 +54,7 @@ export const AuthProvider = ({ children }) => {
     const res = await authService.adminLogin(credentials);
     if (res && res.success && res.admin) {
       setUser({ ...res.admin, role: res.admin.role || 'admin' });
+      toast.success('Successfully logged in.');
     }
     return res;
   };
@@ -55,6 +63,7 @@ export const AuthProvider = ({ children }) => {
     const res = await authService.register(userData);
     if (res && res.success && res.user) {
       setUser(res.user);
+      toast.success('Successfully registered.');
     }
     return res;
   };
@@ -62,6 +71,7 @@ export const AuthProvider = ({ children }) => {
   const logout = async () => {
     await authService.logout();
     setUser(null);
+    toast.success('Logged out successfully.');
   };
 
   const updateProfile = async (profileData) => {
@@ -72,12 +82,17 @@ export const AuthProvider = ({ children }) => {
       } else if (res.admin) {
         setUser({ ...res.admin, role: res.admin.role || 'admin' });
       }
+      toast.success('Profile updated successfully!');
     }
     return res;
   };
 
   const changePassword = async (passwordData) => {
-    return await authService.changePassword(passwordData);
+    const res = await authService.changePassword(passwordData);
+    if (res && res.success) {
+      toast.success('Password changed successfully!');
+    }
+    return res;
   };
 
   return (

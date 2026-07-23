@@ -28,4 +28,34 @@ router.post(
   uploadImages
 );
 
+// @route   POST /api/upload/:folder
+// @desc    Upload multiple images to specific subfolder (max 8)
+// @access  Private (Admin & Superadmin only)
+router.post(
+  '/:folder',
+  protect,
+  authorizeRoles('admin', 'superadmin'),
+  (req, res, next) => {
+    req.uploadFolder = req.params.folder || 'products';
+    next();
+  },
+  uploadParser('images', 8),
+  uploadImages
+);
+
+// @route   POST /api/upload
+// @desc    Upload multiple images with query param folder
+// @access  Private (Admin & Superadmin only)
+router.post(
+  '/',
+  protect,
+  authorizeRoles('admin', 'superadmin'),
+  (req, res, next) => {
+    req.uploadFolder = req.query.folder || 'products';
+    next();
+  },
+  uploadParser('images', 8),
+  uploadImages
+);
+
 export default router;

@@ -24,11 +24,11 @@ export const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 md:gap-8">
           
           {/* Column 1: Brand Info */}
-          <div className="flex flex-col space-y-4">
+          <div className="flex flex-col space-y-4 items-start">
             <Link href="/" className="flex items-center focus:outline-none">
-              <Logo />
+              <Logo imgSize="w-[180px] h-[180px] sm:w-[200px] sm:h-[200px]" showText={false} />
             </Link>
-            <p className="text-sm text-neutral-600 leading-loose max-w-[240px]">
+            <p className="text-sm text-neutral-600 leading-relaxed max-w-[240px]">
               Premium ethnic clothing and designer traditional kurtas crafting legacies of style and elegance.
             </p>
           </div>

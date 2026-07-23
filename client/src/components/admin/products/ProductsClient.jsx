@@ -5,10 +5,12 @@ import Loading from '@/components/ui/Loading.jsx';
 import Error from '@/components/ui/Error.jsx';
 import productService from '@/services/product.service.js';
 import categoryService from '@/services/category.service.js';
+import toast from '@/utils/toast.js';
 
 import ProductsToolbar from './ProductsToolbar.jsx';
 import ProductsTable from './ProductsTable.jsx';
 import ProductFormModal from './ProductFormModal.jsx';
+import ViewProductModal from './ViewProductModal.jsx';
 import DeleteProductModal from './DeleteProductModal.jsx';
 
 /**
@@ -32,6 +34,10 @@ export const ProductsClient = () => {
   // States
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  // View Modal States
+  const [isViewOpen, setIsViewOpen] = useState(false);
+  const [viewingProduct, setViewingProduct] = useState(null);
 
   // Form Modal States
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -130,6 +136,7 @@ export const ProductsClient = () => {
           setIsFormOpen(false);
           setEditingProduct(null);
           fetchProducts();
+          toast.success('Product updated successfully');
         }
       } else {
         // Create Mode
@@ -137,10 +144,13 @@ export const ProductsClient = () => {
         if (response && response.success) {
           setIsFormOpen(false);
           fetchProducts();
+          toast.success('Product created successfully');
         }
       }
     } catch (err) {
-      throw new Error(err.response?.data?.message || err.message || 'Failed to save product details.');
+      const msg = err.response?.data?.message || err.message || 'Failed to save product details.';
+      toast.error(msg);
+      throw new Error(msg);
     } finally {
       setSubmittingProduct(false);
     }
@@ -156,9 +166,11 @@ export const ProductsClient = () => {
         setIsDeleteOpen(false);
         setDeletingProduct(null);
         fetchProducts();
+        toast.success('Product deleted successfully');
       }
     } catch (err) {
-      alert(err.response?.data?.message || err.message || 'Failed to delete product.');
+      const msg = err.response?.data?.message || err.message || 'Failed to delete product.';
+      toast.error(msg);
     } finally {
       setDeletingStatus(false);
     }
@@ -216,6 +228,10 @@ export const ProductsClient = () => {
         <div className="space-y-6">
           <ProductsTable
             products={products}
+            onView={(prod) => {
+              setViewingProduct(prod);
+              setIsViewOpen(true);
+            }}
             onEdit={(prod) => {
               setEditingProduct(prod);
               setIsFormOpen(true);
@@ -254,6 +270,20 @@ export const ProductsClient = () => {
           )}
         </div>
       )}
+
+      {/* View Details Modal */}
+      <ViewProductModal
+        isOpen={isViewOpen}
+        onClose={() => {
+          setIsViewOpen(false);
+          setViewingProduct(null);
+        }}
+        product={viewingProduct}
+        onEdit={(prod) => {
+          setEditingProduct(prod);
+          setIsFormOpen(true);
+        }}
+      />
 
       {/* Create/Edit Form Modal */}
       <ProductFormModal

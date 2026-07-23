@@ -12,3 +12,5 @@ export { default as SectionTitle } from './SectionTitle.jsx';
 export { default as Select } from './Select.jsx';
 export { default as Skeleton } from './Skeleton.jsx';
 export { default as Textarea } from './Textarea.jsx';
+export { default as ToastContainer } from './ToastContainer.jsx';
+

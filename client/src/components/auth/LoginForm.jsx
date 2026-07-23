@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext.jsx';
 import Button from '@/components/ui/Button.jsx';
+import toast from '@/utils/toast.js';
 
 /**
  * LoginForm Client Component.
@@ -48,7 +49,9 @@ export const LoginForm = () => {
     setSuccess(false);
 
     if (!email.trim() || !password) {
-      setError('Please provide both email and password.');
+      const msg = 'Please provide both email and password.';
+      setError(msg);
+      toast.error(msg);
       return;
     }
 
@@ -62,14 +65,14 @@ export const LoginForm = () => {
       if (res && res.success) {
         setSuccess(true);
       } else {
-        setError(res?.message || 'Invalid email or password.');
+        const msg = res?.message || 'Invalid email or password.';
+        setError(msg);
+        toast.error(msg);
       }
     } catch (err) {
-      setError(
-        err.response?.data?.message || 
-        err.message || 
-        'An error occurred. Please verify your credentials and try again.'
-      );
+      const msg = err.message || 'An error occurred. Please verify your credentials and try again.';
+      setError(msg);
+      toast.error(msg);
     } finally {
       setSubmitting(false);
     }

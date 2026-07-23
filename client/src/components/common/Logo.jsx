@@ -1,26 +1,39 @@
 import React from 'react';
+import Image from 'next/image';
 
-/**
- * Reusable branding Logo component.
- */
-export const Logo = ({ className = '' }) => {
+export const Logo = ({ 
+  className = '', 
+  imgSize = 'w-12 h-12', 
+  showText = true,
+  variant = 'light' // 'light' for light backgrounds (dark text), 'dark' for dark backgrounds (light text)
+}) => {
+  const isDark = variant === 'dark';
+
   return (
-    <div className={`flex items-center gap-3 ${className}`}>
-      {/* Temporary Logo Icon/SVG on the left */}
-      <div className="flex items-center justify-center w-9 h-9 rounded-full bg-neutral-950 text-white font-bold text-xs tracking-wider border border-neutral-800 flex-shrink-0 select-none">
-        M
+    <div className={`flex items-center gap-3 group ${className}`}>
+      {/* High resolution circular brand logo image */}
+      <div className={`relative ${imgSize} rounded-full overflow-hidden border border-amber-500/40 shadow-sm flex-shrink-0 bg-black transition-transform duration-300 group-hover:scale-105`}>
+        <img
+          src="/logos/logo.jpg"
+          alt="Mahakaal Fashion Trends Logo"
+          className="w-full h-full object-cover"
+        />
       </div>
-      {/* Full Brand Name in two lines on the right */}
-      <div className="flex flex-col text-left leading-none flex-grow">
-        <span className="text-md font-semibold tracking-[0.18em] text-neutral-950">
-          MAHAKAAL
-        </span>
-        <span className="text-[11px] font-semibold tracking-[0.25em] text-neutral-500 mt-0.5 uppercase">
-          Fashion Trends
-        </span>
-      </div>
+
+      {/* Brand Typography */}
+      {showText && (
+        <div className="flex flex-col text-left leading-none flex-grow">
+          <span className={`text-base font-bold tracking-[0.18em] ${isDark ? 'text-white' : 'text-neutral-950'}`}>
+            MAHAKAAL
+          </span>
+          <span className={`text-[11px] font-semibold tracking-[0.22em] uppercase mt-0.5 ${isDark ? 'text-amber-400' : 'text-neutral-500'}`}>
+            Fashion Trends
+          </span>
+        </div>
+      )}
     </div>
   );
 };
 
 export default Logo;
+

@@ -43,8 +43,10 @@ const productSchema = new mongoose.Schema(
     },
     originalPrice: {
       type: Number,
-      required: [true, 'Original price is required'],
       min: [0, 'Original price cannot be negative'],
+      default: function () {
+        return this.price;
+      },
     },
     discountPercentage: {
       type: Number,
@@ -157,6 +159,15 @@ const productSchema = new mongoose.Schema(
     isActive: {
       type: Boolean,
       default: true,
+    },
+    isDeleted: {
+      type: Boolean,
+      default: false,
+      index: true,
+    },
+    deletedAt: {
+      type: Date,
+      default: null,
     },
   },
   {

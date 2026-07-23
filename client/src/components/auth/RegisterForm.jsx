@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext.jsx';
 import Button from '@/components/ui/Button.jsx';
+import toast from '@/utils/toast.js';
 
 /**
  * RegisterForm Client Component.
@@ -44,17 +45,23 @@ export const RegisterForm = () => {
 
     // 1. Client-side field validations
     if (!fullName.trim() || !email.trim() || !password || !confirmPassword) {
-      setError('Please fill in all required fields.');
+      const msg = 'Please fill in all required fields.';
+      setError(msg);
+      toast.error(msg);
       return;
     }
 
     if (password.length < 6) {
-      setError('Password must be at least 6 characters long.');
+      const msg = 'Password must be at least 6 characters long.';
+      setError(msg);
+      toast.error(msg);
       return;
     }
 
     if (password !== confirmPassword) {
-      setError('Passwords do not match. Please check fields.');
+      const msg = 'Passwords do not match. Please check fields.';
+      setError(msg);
+      toast.error(msg);
       return;
     }
 
@@ -72,14 +79,14 @@ export const RegisterForm = () => {
         setSuccess(true);
         // Redirection triggers automatically through useEffect above
       } else {
-        setError(res?.message || 'Registration failed. Please check input parameters.');
+        const msg = res?.message || 'Registration failed. Please check input parameters.';
+        setError(msg);
+        toast.error(msg);
       }
     } catch (err) {
-      setError(
-        err.response?.data?.message || 
-        err.message || 
-        'An error occurred. Please verify your fields and try again.'
-      );
+      const msg = err.message || 'An error occurred. Please verify your fields and try again.';
+      setError(msg);
+      toast.error(msg);
     } finally {
       setSubmitting(false);
     }

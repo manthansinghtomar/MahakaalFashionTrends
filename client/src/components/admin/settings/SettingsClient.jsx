@@ -8,13 +8,15 @@ import dashboardService from '@/services/dashboard.service.js';
 import SettingsSection from './SettingsSection.jsx';
 import SettingsCard from './SettingsCard.jsx';
 import SettingsForm from './SettingsForm.jsx';
+import RecentlyDeleted from './RecentlyDeleted.jsx';
 
 /**
  * SettingsClient component (Client Coordinator).
  * Fetches system diagnostics from the backend and wraps them in read-only cards.
- * Exposes local interface toggles.
+ * Exposes local interface toggles and Recently Deleted items management.
  */
 export const SettingsClient = () => {
+  const [activeTab, setActiveTab] = useState('settings'); // 'settings' | 'recently-deleted'
   const [systemStatus, setSystemStatus] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -77,16 +79,55 @@ export const SettingsClient = () => {
             CONSOLE SETTINGS
           </span>
           <h2 className="text-3xl font-extrabold tracking-tight text-neutral-900">
-            System Preferences
+            {activeTab === 'settings' ? 'System Preferences' : 'Trash & Deleted Catalog'}
           </h2>
           <p className="text-sm text-neutral-500 max-w-lg leading-relaxed">
-            Monitor API environments, backend engines, database performance, and customize interface details.
+            {activeTab === 'settings' 
+              ? 'Monitor API environments, backend engines, database performance, and customize interface details.'
+              : 'Review soft-deleted product items, restore them to store display, or permanently purge them.'
+            }
           </p>
+        </div>
+
+        {/* Tab Switcher */}
+        <div className="inline-flex p-1.5 bg-neutral-100 rounded-2xl border border-neutral-200/60 self-start sm:self-auto">
+          <button
+            type="button"
+            onClick={() => setActiveTab('settings')}
+            className={`px-4 py-2 text-xs font-bold rounded-xl transition-all flex items-center gap-2 ${
+              activeTab === 'settings'
+                ? 'bg-white text-neutral-950 shadow-xs font-extrabold'
+                : 'text-neutral-500 hover:text-neutral-900'
+            }`}
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+            System Diagnostics
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setActiveTab('recently-deleted')}
+            className={`px-4 py-2 text-xs font-bold rounded-xl transition-all flex items-center gap-2 ${
+              activeTab === 'recently-deleted'
+                ? 'bg-white text-red-600 shadow-xs font-extrabold'
+                : 'text-neutral-500 hover:text-neutral-900'
+            }`}
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            </svg>
+            Recently Deleted Items
+          </button>
         </div>
       </div>
 
-      {/* Main Settings Page Content */}
-      {loading ? (
+      {/* Main Tab Content */}
+      {activeTab === 'recently-deleted' ? (
+        <RecentlyDeleted />
+      ) : loading ? (
         <div className="flex flex-col items-center justify-center py-32 min-h-[300px]">
           <Loading size="lg" />
           <span className="text-xs text-neutral-400 font-semibold uppercase tracking-widest mt-4 animate-pulse">

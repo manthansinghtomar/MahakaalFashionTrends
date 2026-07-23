@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import Loading from '@/components/ui/Loading.jsx';
 import Error from '@/components/ui/Error.jsx';
 import categoryService from '@/services/category.service.js';
+import toast from '@/utils/toast.js';
 
 import CategoriesToolbar from './CategoriesToolbar.jsx';
 import CategoriesTable from './CategoriesTable.jsx';
@@ -111,6 +112,7 @@ export const CategoriesClient = () => {
           setIsFormOpen(false);
           setEditingCategory(null);
           fetchCategories();
+          toast.success('Category updated successfully');
         }
       } else {
         // Create Mode
@@ -118,10 +120,13 @@ export const CategoriesClient = () => {
         if (response && response.success) {
           setIsFormOpen(false);
           fetchCategories();
+          toast.success('Category created successfully');
         }
       }
     } catch (err) {
-      throw new Error(err.response?.data?.message || err.message || 'Failed to save category details.');
+      const msg = err.response?.data?.message || err.message || 'Failed to save category details.';
+      toast.error(msg);
+      throw new Error(msg);
     } finally {
       setSubmittingCategory(false);
     }
@@ -138,10 +143,12 @@ export const CategoriesClient = () => {
         setIsDeleteOpen(false);
         setDeletingCategory(null);
         fetchCategories();
+        toast.success('Category deleted successfully');
       }
     } catch (err) {
-      // Catch backend validation message (e.g. category has active products assigned)
-      setDeleteError(err.response?.data?.message || err.message || 'An error occurred while deleting the category.');
+      const msg = err.response?.data?.message || err.message || 'An error occurred while deleting the category.';
+      setDeleteError(msg);
+      toast.error(msg);
     } finally {
       setDeletingStatus(false);
     }

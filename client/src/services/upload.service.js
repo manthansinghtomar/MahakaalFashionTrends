@@ -12,7 +12,7 @@ export const uploadService = {
       formData.append('images', files);
     }
 
-    return api.post(`${API_ENDPOINTS.UPLOAD}?folder=${folder}`, formData, {
+    return api.post(`/upload/${folder}`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },

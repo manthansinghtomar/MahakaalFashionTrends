@@ -60,9 +60,9 @@ export const createProduct = async (req, res, next) => {
     } = req.body;
 
     // 1. Validations
-    if (!name || !sku || !category || price === undefined || !images) {
+    if (!name || !category || price === undefined || !images) {
       res.status(400);
-      return next(new Error('Please provide name, sku, category, price, and images'));
+      return next(new Error('Please provide name, category, price, and images'));
     }
 
     if (price < 0) {
@@ -70,7 +70,12 @@ export const createProduct = async (req, res, next) => {
       return next(new Error('Price cannot be negative'));
     }
 
-    if (originalPrice !== undefined && originalPrice < 0) {
+    const numPrice = Number(price);
+    const numOriginalPrice = (originalPrice !== undefined && originalPrice !== null && originalPrice !== '')
+      ? Number(originalPrice)
+      : numPrice;
+
+    if (numOriginalPrice < 0) {
       res.status(400);
       return next(new Error('Original price cannot be negative'));
     }
@@ -92,11 +97,14 @@ export const createProduct = async (req, res, next) => {
       return next(new Error('Invalid category ID'));
     }
 
-    // Check unique SKU
-    const skuExists = await Product.findOne({ sku: sku.toUpperCase() });
+    // Auto-generate backend SKU if not explicitly provided
+    let finalSku = sku && sku.trim() 
+      ? sku.trim().toUpperCase() 
+      : `MFT-${Date.now().toString(36).toUpperCase()}-${Math.floor(100 + Math.random() * 900)}`;
+
+    const skuExists = await Product.findOne({ sku: finalSku });
     if (skuExists) {
-      res.status(400);
-      return next(new Error(`A product with SKU ${sku.toUpperCase()} already exists`));
+      finalSku = `MFT-${Date.now().toString(36).toUpperCase()}-${Math.floor(1000 + Math.random() * 9000)}`;
     }
 
     // 2. Slug Generation
@@ -106,12 +114,12 @@ export const createProduct = async (req, res, next) => {
     const newProduct = await Product.create({
       name,
       slug,
-      sku: sku.toUpperCase(),
+      sku: finalSku,
       description,
       brand,
       category,
-      price,
-      originalPrice,
+      price: numPrice,
+      originalPrice: numOriginalPrice,
       images,
       sizes,
       colors,
@@ -240,13 +248,36 @@ export const deleteProduct = async (req, res, next) => {
       return next(new Error('Product not found'));
     }
 
+    product.isDeleted = true;
     product.isActive = false;
-    product.status = 'inactive';
+    product.deletedAt = new Date();
     await product.save();
 
     res.status(200).json({
       success: true,
-      message: 'Product soft-deleted successfully',
+      message: 'Product moved to Recently Deleted',
+      product,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * @desc    Get List of Soft Deleted Products (Admin only)
+ * @route   GET /api/products/deleted/list
+ * @access  Private (Admin/Superadmin)
+ */
+export const getDeletedProducts = async (req, res, next) => {
+  try {
+    const products = await Product.find({ isDeleted: true })
+      .populate('category', 'name slug')
+      .sort({ deletedAt: -1 });
+
+    res.status(200).json({
+      success: true,
+      count: products.length,
+      products,
     });
   } catch (error) {
     next(error);
@@ -268,14 +299,50 @@ export const restoreProduct = async (req, res, next) => {
       return next(new Error('Product not found'));
     }
 
+    product.isDeleted = false;
     product.isActive = true;
     product.status = 'active';
+    product.deletedAt = null;
     await product.save();
 
     res.status(200).json({
       success: true,
       message: 'Product restored successfully',
       product,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * @desc    Permanently Delete Product from Database (Admin only)
+ * @route   DELETE /api/products/:id/permanent
+ * @access  Private (Admin/Superadmin)
+ */
+export const permanentDeleteProduct = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    const product = await Product.findById(id);
+    if (!product) {
+      res.status(404);
+      return next(new Error('Product not found'));
+    }
+
+    // Clean up Cloudinary images
+    if (product.images && product.images.length > 0) {
+      const destroyPromises = product.images
+        .filter((img) => img.public_id)
+        .map((img) => cloudinary.uploader.destroy(img.public_id));
+      await Promise.allSettled(destroyPromises);
+    }
+
+    await Product.findByIdAndDelete(id);
+
+    res.status(200).json({
+      success: true,
+      message: 'Product permanently deleted',
     });
   } catch (error) {
     next(error);
@@ -306,12 +373,12 @@ export const getAllProducts = async (req, res, next) => {
       includeInactive,
     } = req.query;
 
-    const query = {};
+    const query = { isDeleted: { $ne: true } };
 
-    // 1. Soft-delete handling: default to active products only
+    // 1. Soft-delete / inactive handling:
     const isAdmin = req.user && (req.user.role === 'admin' || req.user.role === 'superadmin');
     if (isAdmin && includeInactive === 'true') {
-      // Allow admin to see inactive products
+      // Allow admin to see inactive products (non-deleted)
     } else {
       query.isActive = true;
     }
@@ -414,7 +481,7 @@ export const getAllProducts = async (req, res, next) => {
 };
 
 /**
- * @desc    Get single product by slug (Public)
+ * @desc    Get single product by slug or ID (Public / Admin)
  * @route   GET /api/products/:slug
  * @access  Public
  */
@@ -422,7 +489,12 @@ export const getProductBySlug = async (req, res, next) => {
   try {
     const { slug } = req.params;
 
-    const product = await Product.findOne({ slug, isActive: true }).populate('category', 'name slug');
+    const isMongoId = /^[0-9a-fA-F]{24}$/.test(slug);
+    const query = isMongoId 
+      ? { $or: [{ slug }, { _id: slug }] }
+      : { slug };
+
+    const product = await Product.findOne(query).populate('category', 'name slug');
     if (!product) {
       res.status(404);
       return next(new Error('Product not found'));

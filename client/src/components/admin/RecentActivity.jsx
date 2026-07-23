@@ -57,10 +57,10 @@ export const RecentActivity = ({ overview = {} }) => {
                 <thead>
                   <tr className="bg-neutral-50 border-b border-neutral-100 text-neutral-400 font-bold uppercase tracking-wider">
                     <th className="p-4">Product details</th>
-                    <th className="p-4">SKU</th>
                     <th className="p-4">Price</th>
                     <th className="p-4">Stock</th>
                     <th className="p-4">Status</th>
+                    <th className="p-4 pr-6 text-right">Action</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-neutral-100">
@@ -72,8 +72,9 @@ export const RecentActivity = ({ overview = {} }) => {
                           {prod.category?.name || 'Uncategorized'}
                         </span>
                       </td>
-                      <td className="p-4 font-semibold text-neutral-500">{prod.sku}</td>
-                      <td className="p-4 font-bold text-neutral-800">${prod.price?.toFixed(2)}</td>
+                      <td className="p-4 font-bold text-neutral-800">
+                        ₹{new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 }).format(prod.price || 0)}
+                      </td>
                       <td className="p-4 font-semibold text-neutral-600">{prod.stock}</td>
                       <td className="p-4">
                         <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[9px] font-bold tracking-wider uppercase ${
@@ -83,6 +84,15 @@ export const RecentActivity = ({ overview = {} }) => {
                         }`}>
                           {prod.isActive ? 'Active' : 'Draft'}
                         </span>
+                      </td>
+                      <td className="p-4 pr-6 text-right">
+                        <a
+                          href="/admin/products"
+                          className="inline-flex items-center text-xs font-bold text-neutral-500 hover:text-neutral-900 transition-colors"
+                          title="View products catalog"
+                        >
+                          View
+                        </a>
                       </td>
                     </tr>
                   ))}
