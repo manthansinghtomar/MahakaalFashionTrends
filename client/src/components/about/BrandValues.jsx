@@ -10,42 +10,42 @@ import SectionTitle from '@/components/ui/SectionTitle.jsx';
 export const BrandValues = () => {
   const values = [
     {
-      title: 'Premium Quality',
-      description: 'We source high-grade long-staple threads and authentic raw silks, ensuring that every garment has a rich weight, beautiful drape, and longevity.',
+      title: 'Quality Products',
+      description: 'We carefully select clothing that offers comfort, durability, and everyday style so our customers always get the best value for their money.',
       icon: (
         <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          {/* Crown Icon */}
-          <path strokeLinecap="round" strokeLinejoin="round" d="M3 6l3 12h12l3-12-5 4-4-6-4 6-5-4z M6 18c0 1.1.9 2 2 2h8a2 2 0 002-2" />
+          {/* Quality Shield Icon */}
+          <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
         </svg>
       ),
     },
     {
-      title: 'Authentic Craftsmanship',
-      description: 'We honor ancestral weaving, hand-embroidery, and traditional tailoring methods, ensuring that every design carries human touch and artistry.',
+      title: 'Affordable Pricing',
+      description: "We believe everyone deserves stylish fashion. That's why we focus on offering quality products at reasonable, budget-friendly prices.",
       icon: (
         <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          {/* Scissors Icon */}
-          <path strokeLinecap="round" strokeLinejoin="round" d="M6 6a3 3 0 100 6 3 3 0 000-6z M18 6a3 3 0 100 6 3 3 0 000-6z M14.5 12.5L9 18 M9.5 12.5L15 18" />
+          {/* Tag / Price Icon */}
+          <path strokeLinecap="round" strokeLinejoin="round" d="M7 7h.01M7 3h5a1 1 0 01.707.293l7 7a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-7-7A1 1 0 017 9V3z" />
         </svg>
       ),
     },
     {
       title: 'Customer Satisfaction',
-      description: 'Our commitment is to guide you through personalized fittings, style consultation, and priority handling for a seamless experience.',
+      description: 'Helping every customer find the right fit, size, and style with a smooth, friendly, and welcoming shopping experience.',
       icon: (
         <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          {/* Handset/Advisor Concierge Icon */}
-          <path strokeLinecap="round" strokeLinejoin="round" d="M3 18v-6a9 9 0 0118 0v6 M21 19a2 2 0 01-2 2h-1a2 2 0 01-2-2v-3a2 2 0 012-2h3 M3 19a2 2 0 002 2h1a2 2 0 002-2v-3a2 2 0 00-2-2H3" />
+          {/* Smile / Satisfaction Icon */}
+          <path strokeLinecap="round" strokeLinejoin="round" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
       ),
     },
     {
-      title: 'Timeless Style',
-      description: 'We design clothing that transcends seasonal micro-trends. Our aesthetic focus is on classic silhouettes that remain refined for years to come.',
+      title: 'Wide Collection',
+      description: 'From kids to teenagers and adults, explore casual, formal, and everyday fashion options all in one convenient place.',
       icon: (
         <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          {/* Hourglass Icon */}
-          <path strokeLinecap="round" strokeLinejoin="round" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+          {/* Collection Grid Icon */}
+          <path strokeLinecap="round" strokeLinejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
         </svg>
       ),
     },
@@ -60,7 +60,7 @@ export const BrandValues = () => {
         {/* Section Header */}
         <SectionTitle 
           title="Our Core Values" 
-          subtitle="The foundational pillars that guide our commitment to luxury and heritage." 
+          subtitle="The values that guide how we serve every customer at Mahakaal Fashion Trends." 
           center={true} 
         />
 
@@ -90,14 +90,6 @@ export const BrandValues = () => {
                     {val.description}
                   </p>
                 </div>
-              </div>
-
-              {/* Decorative luxury detail at card bottom */}
-              <div className="mt-8 pt-4 border-t border-neutral-50 flex items-center justify-between text-[10px] uppercase font-bold tracking-widest text-neutral-400 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                <span>Core Pillar</span>
-                <svg className="w-3 h-3 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
               </div>
             </div>
           ))}

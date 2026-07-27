@@ -12,7 +12,11 @@ const api = axios.create({
 // Request Interceptor
 api.interceptors.request.use(
   (config) => {
-    // Add logic here if Authorization header or tokens are needed in the future
+    // Dynamically match browser hostname in development so auth cookies match host (localhost vs network IP)
+    if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
+      const hostname = window.location.hostname;
+      config.baseURL = `http://${hostname}:5000/api`;
+    }
     return config;
   },
   (error) => {

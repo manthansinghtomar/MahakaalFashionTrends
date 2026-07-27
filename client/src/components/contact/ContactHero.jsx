@@ -27,7 +27,7 @@ export const ContactHero = () => {
       <Container className="relative z-10 text-center flex flex-col items-center">
         {/* Editorial Wide-Spaced Tag */}
         <span className="text-xs font-semibold uppercase tracking-[0.25em] text-secondary mb-4">
-          Concierge Support
+          CONTACT MAHAKAAL FASHION TRENDS
         </span>
 
         {/* Hero Title */}
@@ -35,12 +35,12 @@ export const ContactHero = () => {
           id="contact-hero-title"
           className="text-4xl sm:text-5xl font-bold tracking-tight text-white mb-4"
         >
-          Get in Touch
+          Get in Touch With Us
         </h1>
 
         {/* Subtitle */}
         <p className="text-sm sm:text-base text-neutral-300 max-w-xl mx-auto leading-relaxed">
-          Whether you have questions about custom sizes, private atelier appointments, or order deliveries, our dedicated team is at your service.
+          Have questions about our products, store location, pricing, or availability? We're here to help. Visit our store in Birla Nagar, Gwalior or contact us by phone, WhatsApp, or email.
         </p>
       </Container>
     </section>

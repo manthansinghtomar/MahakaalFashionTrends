@@ -35,7 +35,7 @@ export const AboutHero = () => {
       <Container className="relative z-10 text-center flex flex-col items-center">
         {/* Editorial Wide-Spaced Tag */}
         <span className="text-xs font-semibold uppercase tracking-[0.25em] text-secondary mb-4">
-          Heritage & Elegance
+          ABOUT MAHAKAAL FASHION TRENDS
         </span>
 
         {/* Hero Title */}
@@ -43,7 +43,7 @@ export const AboutHero = () => {
           id="about-hero-title"
           className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight leading-[1.1] max-w-4xl text-white mb-6"
         >
-          The Art of Indian Sartorial Heritage, <span className="text-secondary">Redefined</span>
+          Your Trusted Men's Fashion Store in <span className="text-secondary">Gwalior</span>
         </h1>
 
         {/* Small Elegant Divider */}
@@ -51,7 +51,7 @@ export const AboutHero = () => {
 
         {/* Hero Subtitle */}
         <p className="text-base sm:text-lg lg:text-xl text-neutral-300 max-w-2xl leading-relaxed">
-          Mahakaal Fashion Trends marries centuries-old handcrafted textile traditions with modern silhouettes, creating a new standard of luxury menswear for the contemporary gentleman.
+          Mahakaal Fashion Trends is a men's fashion store based in Gwalior, offering stylish and affordable clothing for kids, teenagers, and adults. From casual wear to formal outfits, we provide quality fashion at budget-friendly prices.
         </p>
       </Container>
     </section>

@@ -47,17 +47,9 @@ export const MissionVision = () => {
                   Our Mission
                 </h3>
                 <p className="text-sm sm:text-base text-neutral-500 leading-relaxed">
-                  To safeguard, champion, and modernise the traditional textile crafts of India. We aim to supply modern gentlemen with luxury attire that respects ancestral techniques, ensuring master weavers receive the recognition and support they deserve while our clients receive impeccable, bespoke garments.
+                  Our mission is to provide quality men's and kids' fashion at affordable prices while ensuring every customer enjoys a friendly and satisfying shopping experience. We continuously update our collection with the latest trends so customers always have great choices for daily wear, office wear, college, festivals, and special occasions.
                 </p>
               </div>
-            </div>
-
-            {/* Decorative detail bottom border */}
-            <div className="mt-8 pt-4 border-t border-neutral-50 flex items-center justify-between text-[10px] uppercase font-bold tracking-widest text-neutral-400 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-              <span>Sartorial Purpose</span>
-              <svg className="w-3.5 h-3.5 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
             </div>
           </div>
 
@@ -93,17 +85,9 @@ export const MissionVision = () => {
                   Our Vision
                 </h3>
                 <p className="text-sm sm:text-base text-neutral-500 leading-relaxed">
-                  To become the premier global name for luxury Indian heritage fashion. We aspire to build an international community where quality, cultural depth, and sartorial precision are celebrated, ensuring classical Indian tailoring is permanently woven into the fabric of global luxury menswear.
+                  Our vision is to become one of the most trusted fashion stores in Gwalior by offering quality products, fair pricing, and excellent customer service. We aim to make Mahakaal Fashion Trends the preferred destination for stylish and affordable fashion for every generation.
                 </p>
               </div>
-            </div>
-
-            {/* Decorative detail bottom border */}
-            <div className="mt-8 pt-4 border-t border-neutral-50 flex items-center justify-between text-[10px] uppercase font-bold tracking-widest text-neutral-400 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-              <span>Future Outlook</span>
-              <svg className="w-3.5 h-3.5 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
             </div>
           </div>
 

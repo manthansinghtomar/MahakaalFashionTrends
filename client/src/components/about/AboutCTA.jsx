@@ -22,18 +22,18 @@ export const AboutCTA = () => {
 
       <Container className="relative z-10 text-center flex flex-col items-center space-y-6">
         <span className="text-[10px] font-bold tracking-widest uppercase text-secondary">
-          Exclusive Sartorial Experience
+          ABOUT MAHAKAAL FASHION TRENDS
         </span>
 
         <h2 
           id="about-cta-title"
           className="text-3xl sm:text-4xl font-bold tracking-tight text-white max-w-2xl mx-auto"
         >
-          Discover Your Signature Silhouette
+          Fashion for Every Generation
         </h2>
 
         <p className="text-sm sm:text-base text-neutral-300 max-w-xl mx-auto leading-relaxed">
-          Step into a world of curated Indian craftsmanship. Explore our collections of luxury ethnic shirts, designer Kurtas, and bespoke jackets engineered for modern elegance.
+          Mahakaal Fashion Trends is a trusted men's fashion store in Birla Nagar, Gwalior. We offer stylish and affordable clothing for kids, teenagers, and adults, including casual wear, formal wear, jeans, T-shirts, shirts, lowers, belts, and accessories for every occasion.
         </p>
 
         {/* CTA Button Link */}

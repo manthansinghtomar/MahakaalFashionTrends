@@ -10,37 +10,37 @@ import SectionTitle from '@/components/ui/SectionTitle.jsx';
 export const Craftsmanship = () => {
   const details = [
     {
-      title: 'Bespoke Tailoring',
-      description: 'Our tailoring processes follow rigorous geometric modeling to flatter the male form. Pattern pieces are individual works of art, drafted on card stock before fabric cutting.',
+      title: 'Casual Wear',
+      description: 'Comfortable and stylish outfits for daily wear, college, travel, and casual occasions.',
       icon: (
         <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
           {/* Scissors & Ruler outline */}
           <path strokeLinecap="round" strokeLinejoin="round" d="M9 21h6m-6-4h6m-6-4h6M9 9h6M9 5h6M4 12h16M4 18h16M4 6h16" />
         </svg>
       ),
-      bullets: ['Mathematically Drafted Cuts', 'Structured Shoulder Profiles', 'Individual Patterning'],
+      bullets: ['T-Shirts', 'Polo T-Shirts', 'Jeans', 'Lowers'],
     },
     {
-      title: 'Premium Fabrics',
-      description: 'We source only premium silks, organic linens, and breathable long-staple cottons. Each weave is inspected for tensile strength, drape, color fastness, and weight.',
+      title: 'Formal Collection',
+      description: 'Professional clothing for office, meetings, interviews, and special occasions.',
       icon: (
         <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
           {/* Loom/Threads Icon */}
           <path strokeLinecap="round" strokeLinejoin="round" d="M6 3v18M18 3v18M3 6h18M3 18h18M3 12h18" />
         </svg>
       ),
-      bullets: ['Mulberry Silk Blends', 'Pure Handloomed Linen', 'Long-Staple Combed Cotton'],
+      bullets: ['Formal Shirts', 'Formal Trousers', 'Belts', 'Office Wear'],
     },
     {
-      title: 'Meticulous Details',
-      description: 'Every seam is double-reinforced for durability. We pride ourselves on custom embroidery alignment, matched stripes/motifs at junctions, and hand-selected brass buttons.',
+      title: 'Latest Fashion',
+      description: 'Explore the newest arrivals and trending styles regularly added to our collection.',
       icon: (
         <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
           {/* Sparkles / Precise Focus Icon */}
           <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 21l-1.813-5.096L2.091 15 7.187 13.187 9 8l1.813 5.187L16 15l-6.187.904zM19.071 4.929l-1.414 1.414m0 0l-1.414-1.414m1.414 1.414l1.414 1.414m-1.414-1.414l-1.414 1.414" />
         </svg>
       ),
-      bullets: ['Double-Stitched Seams', 'Precision Pattern Alignment', 'Custom Casted hardware'],
+      bullets: ['New Arrivals', 'Trending Styles', 'Seasonal Collection', 'Fashion Accessories'],
     },
   ];
 
@@ -52,8 +52,8 @@ export const Craftsmanship = () => {
       <Container>
         {/* Section Header */}
         <SectionTitle 
-          title="The Art of Craftsmanship" 
-          subtitle="Where ancestral technique meets bespoke engineering." 
+          title="What You'll Find at Mahakaal Fashion Trends" 
+          subtitle="Discover a wide range of stylish and affordable clothing for every age and every occasion." 
           center={true} 
         />
 

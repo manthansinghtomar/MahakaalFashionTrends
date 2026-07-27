@@ -9,25 +9,36 @@ import Image from 'next/image';
  * Handles thumbnail click swapping with smooth transition animations.
  */
 export const ProductGallery = ({ images = [], defaultImage = '' }) => {
-  // Normalize images list (handle case where images array is empty but single defaultImage is provided)
-  const galleryImages = images.length > 0 
-    ? images 
-    : defaultImage 
-      ? [{ url: defaultImage }] 
-      : [];
+  // 1. Safely normalize and filter valid image URLs
+  const galleryImages = React.useMemo(() => {
+    let list = [];
+    if (Array.isArray(images) && images.length > 0) {
+      list = images
+        .map(img => (typeof img === 'string' ? { url: img } : img))
+        .filter(img => img && typeof img.url === 'string' && img.url.trim() !== '');
+    }
+    if (list.length === 0 && typeof defaultImage === 'string' && defaultImage.trim() !== '') {
+      list = [{ url: defaultImage.trim() }];
+    }
+    return list;
+  }, [images, defaultImage]);
 
-  const [activeImage, setActiveImage] = useState('');
+  // 2. Default activeImage to null (NEVER empty string "") to prevent Next.js empty src warnings
+  const [activeImage, setActiveImage] = useState(() => {
+    return galleryImages.length > 0 ? galleryImages[0].url : null;
+  });
 
-  // Sync active image when product details change
+  // 3. Keep activeImage in sync when props change
   useEffect(() => {
     if (galleryImages.length > 0) {
       setActiveImage(galleryImages[0].url);
     } else {
-      setActiveImage('');
+      setActiveImage(null);
     }
-  }, [images, defaultImage]);
+  }, [galleryImages]);
 
-  if (galleryImages.length === 0) {
+  // 4. Strict Guard: If no valid non-empty activeImage exists, render fallback container only
+  if (!activeImage || typeof activeImage !== 'string' || activeImage.trim() === '') {
     return (
       <div className="w-full aspect-[4/5] rounded-3xl bg-neutral-50 flex items-center justify-center text-neutral-300 border border-neutral-100">
         <svg className="h-16 w-16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -37,7 +48,8 @@ export const ProductGallery = ({ images = [], defaultImage = '' }) => {
     );
   }
 
-  const isRemote = activeImage.startsWith('http://') || activeImage.startsWith('https://');
+  const validSrc = activeImage.trim();
+  const isRemote = validSrc.startsWith('http://') || validSrc.startsWith('https://');
 
   return (
     <div className="flex flex-col gap-4">
@@ -45,14 +57,14 @@ export const ProductGallery = ({ images = [], defaultImage = '' }) => {
       <div className="relative w-full aspect-[4/5] rounded-3xl overflow-hidden bg-neutral-50 border border-neutral-100 shadow-xs flex-shrink-0 group">
         {isRemote ? (
           <img
-            src={activeImage}
+            src={validSrc}
             alt="Product Display Detail"
             className="w-full h-full object-cover object-center transition-all duration-700 hover:scale-102"
             loading="eager"
           />
         ) : (
           <Image
-            src={activeImage}
+            src={validSrc}
             alt="Product Display Detail"
             fill
             priority
@@ -62,17 +74,20 @@ export const ProductGallery = ({ images = [], defaultImage = '' }) => {
         )}
       </div>
 
-      {/* 2. Thumbnails Row (Only render if there are multiple images) */}
+      {/* 2. Thumbnails Row (Only render if there are multiple valid images) */}
       {galleryImages.length > 1 && (
         <div className="flex flex-wrap items-center gap-3 mt-2">
           {galleryImages.map((img, idx) => {
-            const isSelected = img.url === activeImage;
-            const isThumbRemote = img.url.startsWith('http://') || img.url.startsWith('https://');
+            const url = img?.url?.trim();
+            if (!url) return null;
+
+            const isSelected = url === validSrc;
+            const isThumbRemote = url.startsWith('http://') || url.startsWith('https://');
             
             return (
               <button
                 key={idx}
-                onClick={() => setActiveImage(img.url)}
+                onClick={() => setActiveImage(url)}
                 className={`relative w-20 aspect-[4/5] rounded-xl overflow-hidden bg-neutral-50 border transition-all duration-300 outline-none ${
                   isSelected 
                     ? 'border-secondary ring-2 ring-secondary/20 scale-95 shadow-sm' 
@@ -82,14 +97,14 @@ export const ProductGallery = ({ images = [], defaultImage = '' }) => {
               >
                 {isThumbRemote ? (
                   <img
-                    src={img.url}
+                    src={url}
                     alt=""
                     className="w-full h-full object-cover object-center"
                     loading="lazy"
                   />
                 ) : (
                   <Image
-                    src={img.url}
+                    src={url}
                     alt=""
                     fill
                     sizes="80px"
