@@ -19,7 +19,7 @@ export const ContactInfo = () => {
       ),
     },
     {
-      label: 'Phone Concierge',
+      label: 'Phone Numbers',
       value: FOOTER_CONTACT.phone,
       href: `tel:${FOOTER_CONTACT.phone.replace(/\s+/g, '')}`,
       icon: (
@@ -29,7 +29,7 @@ export const ContactInfo = () => {
       ),
     },
     {
-      label: 'Flagship Atelier',
+      label: 'Address',
       value: FOOTER_CONTACT.address,
       icon: (
         <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -73,19 +73,19 @@ export const ContactInfo = () => {
               <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-neutral-50 text-neutral-900 group-hover:bg-secondary/10 group-hover:text-secondary border border-neutral-100 flex items-center justify-center transition-colors">
                 {detail.icon}
               </div>
-              <div className="space-y-1">
+              <div className="min-w-0 flex-1 space-y-1">
                 <span className="block text-[10px] font-bold uppercase tracking-widest text-neutral-400">
                   {detail.label}
                 </span>
                 {detail.href ? (
                   <a 
                     href={detail.href} 
-                    className="block text-sm font-semibold text-neutral-900 hover:text-secondary hover:underline transition-all"
+                    className="block text-sm font-semibold text-neutral-900 hover:text-secondary hover:underline transition-all break-all"
                   >
                     {detail.value}
                   </a>
                 ) : (
-                  <span className="block text-sm font-semibold text-neutral-800 leading-normal">
+                  <span className="block text-sm font-semibold text-neutral-800 leading-normal break-words">
                     {detail.value}
                   </span>
                 )}

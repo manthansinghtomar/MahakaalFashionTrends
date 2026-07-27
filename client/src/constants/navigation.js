@@ -172,6 +172,18 @@ export const ADMIN_NAV_LINKS = [
     children: [],
   },
   {
+    label: 'Subscribers',
+    href: ROUTES.ADMIN_SUBSCRIBERS,
+    icon: 'NewsletterIcon',
+    requiresAuth: true,
+    roles: ['admin', 'superadmin'],
+    showInNavbar: false,
+    showInFooter: false,
+    showInMobileMenu: false,
+    isComingSoon: false,
+    children: [],
+  },
+  {
     label: 'Settings',
     href: ROUTES.ADMIN_SETTINGS,
     icon: 'SettingsIcon',

@@ -2,13 +2,18 @@
 
 import React, { useState } from 'react';
 import Button from '@/components/ui/Button.jsx';
+import newsletterService from '@/services/newsletter.service.js';
+import toast from '@/utils/toast.js';
+
+// Regex pattern for client-side email format validation
+const EMAIL_REGEX = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 
 /**
  * Interactive Newsletter subscription form (Client Component).
- * Keeps the input form visible upon success, clearing the input and displaying an inline success alert.
+ * Integrates with real backend service and displays toast notifications.
  */
 export const NewsletterForm = ({ config }) => {
-  const { placeholder, buttonText, successMessage } = config;
+  const { placeholder, buttonText } = config;
 
   const [email, setEmail] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -22,28 +27,42 @@ export const NewsletterForm = ({ config }) => {
 
     const trimmedEmail = email.trim();
 
-    // Basic lightweight validation checks
+    // Frontend validation
     if (!trimmedEmail) {
-      setError('Please provide an email address.');
+      const errMsg = 'Please enter your email address.';
+      setError(errMsg);
+      toast.error(errMsg);
       return;
     }
 
-    if (!trimmedEmail.includes('@') || !trimmedEmail.includes('.')) {
-      setError('Please enter a valid email address.');
+    if (!EMAIL_REGEX.test(trimmedEmail)) {
+      const errMsg = 'Please enter a valid email address.';
+      setError(errMsg);
+      toast.error(errMsg);
       return;
     }
 
     setSubmitting(true);
 
     try {
-      // Simulate API submit delay
-      await new Promise((resolve) => setTimeout(resolve, 1200));
-      
-      // On success, reset input field and display success banner
-      setEmail('');
-      setSuccess(true);
+      const res = await newsletterService.subscribe(trimmedEmail.toLowerCase());
+
+      if (res && res.success) {
+        setEmail('');
+        setSuccess(true);
+        toast.success(res.message || 'Thank you for subscribing!');
+      } else {
+        const errMsg = res?.message || 'Something went wrong. Please try again.';
+        setError(errMsg);
+        toast.error(errMsg);
+      }
     } catch (err) {
-      setError('An error occurred. Please try again.');
+      const errMsg =
+        err.response?.data?.message ||
+        err.message ||
+        'Something went wrong. Please try again.';
+      setError(errMsg);
+      toast.error(errMsg);
     } finally {
       setSubmitting(false);
     }
@@ -95,7 +114,7 @@ export const NewsletterForm = ({ config }) => {
       {/* Inline success display container */}
       {success && (
         <div 
-          className="mt-4 p-4 rounded-xl bg-secondary/5 border border-secondary/15 flex items-start gap-3 text-left animate-fade-in"
+          className="mt-4 p-4 rounded-xl bg-secondary/10 border border-secondary/20 flex items-start gap-3 text-left animate-fade-in"
           role="alert"
         >
           {/* Checkmark Icon */}
@@ -105,7 +124,7 @@ export const NewsletterForm = ({ config }) => {
             </svg>
           </div>
           <p className="text-xs sm:text-sm font-semibold text-secondary leading-snug">
-            {successMessage}
+            Thank you for subscribing!
           </p>
         </div>
       )}

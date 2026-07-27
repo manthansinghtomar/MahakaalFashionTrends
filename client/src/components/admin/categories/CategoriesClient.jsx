@@ -10,6 +10,7 @@ import CategoriesToolbar from './CategoriesToolbar.jsx';
 import CategoriesTable from './CategoriesTable.jsx';
 import CategoryFormModal from './CategoryFormModal.jsx';
 import DeleteCategoryModal from './DeleteCategoryModal.jsx';
+import ViewCategoryModal from './ViewCategoryModal.jsx';
 
 /**
  * CategoriesClient component (Client Coordinator).
@@ -29,6 +30,10 @@ export const CategoriesClient = () => {
   // States
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  // View Modal States
+  const [isViewOpen, setIsViewOpen] = useState(false);
+  const [viewingCategory, setViewingCategory] = useState(null);
 
   // Form Modal States
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -201,6 +206,10 @@ export const CategoriesClient = () => {
         <div className="space-y-6">
           <CategoriesTable
             categories={categories}
+            onView={(cat) => {
+              setViewingCategory(cat);
+              setIsViewOpen(true);
+            }}
             onEdit={(cat) => {
               setEditingCategory(cat);
               setIsFormOpen(true);
@@ -240,6 +249,21 @@ export const CategoriesClient = () => {
           )}
         </div>
       )}
+
+      {/* View Details Preview Modal */}
+      <ViewCategoryModal
+        isOpen={isViewOpen}
+        onClose={() => {
+          setIsViewOpen(false);
+          setViewingCategory(null);
+        }}
+        category={viewingCategory}
+        onEdit={(cat) => {
+          setViewingCategory(null);
+          setEditingCategory(cat);
+          setIsFormOpen(true);
+        }}
+      />
 
       {/* Create/Edit Form Modal */}
       <CategoryFormModal

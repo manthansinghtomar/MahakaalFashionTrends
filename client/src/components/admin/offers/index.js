@@ -4,4 +4,5 @@ export { default as OffersToolbar } from './OffersToolbar.jsx';
 export { default as OfferFormModal } from './OfferFormModal.jsx';
 export { default as DeleteOfferModal } from './DeleteOfferModal.jsx';
 export { default as OfferStatusBadge } from './OfferStatusBadge.jsx';
+export { default as ViewOfferModal } from './ViewOfferModal.jsx';
 export { default } from './OffersClient.jsx';

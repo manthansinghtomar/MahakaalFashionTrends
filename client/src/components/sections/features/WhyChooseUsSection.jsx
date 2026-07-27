@@ -18,16 +18,16 @@ export const WhyChooseUsSection = () => {
         {/* Section Header */}
         <div className="flex flex-col items-center text-center space-y-4 mb-16 max-w-2xl mx-auto">
           <span className="text-xs font-semibold uppercase tracking-[0.25em] text-secondary">
-            WHY CHOOSE US
+            WHY SHOP WITH US
           </span>
           <h2 
             id="features-section-title"
             className="text-3xl sm:text-4xl font-bold tracking-tight text-neutral-900"
           >
-            Crafted for Modern Gentlemen
+            Why Customers Choose Mahakaal Fashion Trends
           </h2>
           <p className="text-base text-neutral-500 leading-relaxed">
-            Mahakaal Fashion Trends marries centuries-old handcrafting heritage with contemporary style parameters, establishing a new standard in luxury ethnic menswear.
+            We offer quality men's clothing, accessories, and everyday fashion at affordable prices with a focus on customer satisfaction and trusted local service.
           </p>
         </div>
 

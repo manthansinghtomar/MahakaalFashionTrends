@@ -22,7 +22,7 @@ export const NewsletterSection = () => {
         {/* Section Header */}
         <div className="space-y-4">
           <span className="text-xs font-semibold uppercase tracking-[0.25em] text-secondary block">
-            NEWSLETTER
+            {NEWSLETTER_CONFIG.smallLabel || 'STAY CONNECTED'}
           </span>
           <h2 
             id="newsletter-section-title"

@@ -57,7 +57,8 @@ export const OffersToolbar = ({
         >
           <option value="">All Statuses</option>
           <option value="active">Active</option>
-          <option value="inactive">Inactive</option>
+          <option value="upcoming">Upcoming</option>
+          <option value="expired">Expired</option>
         </select>
 
         {/* Sorting options */}

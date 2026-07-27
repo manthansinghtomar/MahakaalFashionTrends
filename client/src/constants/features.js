@@ -1,31 +1,31 @@
 /**
- * Configuration for the "Why Choose Us" features.
+ * Configuration for the "Why Shop With Us" features.
  * Stored separately to maintain clean presentation code.
- * Titles and descriptions use premium luxury brand copy.
+ * Accurate real business values for Mahakaal Fashion Trends.
  */
 export const FEATURES_CONFIG = [
   {
-    id: 'sartorial-excellence',
-    title: 'Sartorial Excellence',
-    description: 'Every garment is crafted from the world\'s most luxurious fabrics, selected for their rich drape, breathability, and enduring refinement.',
+    id: 'quality-products',
+    title: 'Quality Products',
+    description: 'Carefully selected men\'s clothing and accessories designed for comfort, durability, and everyday style.',
     icon: 'quality',
   },
   {
-    id: 'bespoke-precision',
-    title: 'Bespoke Precision',
-    description: 'Designed by master tailors with decades of experience, our cuts are mathematically proportioned to define and enhance the masculine silhouette.',
-    icon: 'tailoring',
+    id: 'affordable-prices',
+    title: 'Affordable Prices',
+    description: 'Get stylish fashion at budget-friendly prices without compromising on quality.',
+    icon: 'pricing',
   },
   {
-    id: 'privileged-handling',
-    title: 'Privileged Handling',
-    description: 'From our atelier directly to your doorstep, each order is securely packaged and dispatched via priority courier networks with fully tracked delivery.',
-    icon: 'delivery',
+    id: 'wide-collection',
+    title: 'Wide Collection',
+    description: 'Choose from Polo T-Shirts, Shirts, Jeans, Trousers, Lowers, Belts, Kids Wear and more.',
+    icon: 'collection',
   },
   {
-    id: 'style-concierge',
-    title: 'Style Concierge',
-    description: 'Our dedicated sartorial advisors are available around the clock to offer personalized styling tips, fitting guidance, and shopping assistance.',
+    id: 'trusted-customer-service',
+    title: 'Trusted Customer Service',
+    description: 'Our team is always ready to help you find the right products and provide a smooth shopping experience.',
     icon: 'support',
   },
 ];

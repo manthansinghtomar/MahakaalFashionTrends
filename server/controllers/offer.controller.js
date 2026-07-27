@@ -2,26 +2,16 @@ import Offer from '../models/Offer.js';
 import cloudinary from '../config/cloudinary.js';
 
 /**
- * Checks if a proposed offer's date range overlaps with any existing active/active status offer.
+ * Computes dynamic status of an offer based on current date.
  */
-const checkOverlap = async (startDate, endDate, excludeOfferId = null) => {
-  const query = {
-    isActive: true,
-    status: 'active',
-    $or: [
-      {
-        startDate: { $lte: new Date(endDate) },
-        endDate: { $gte: new Date(startDate) },
-      },
-    ],
-  };
+const computeOfferStatus = (startDate, endDate) => {
+  const now = new Date();
+  const start = new Date(startDate);
+  const end = new Date(endDate);
 
-  if (excludeOfferId) {
-    query._id = { $ne: excludeOfferId };
-  }
-
-  const overlappingOffer = await Offer.findOne(query);
-  return overlappingOffer;
+  if (now < start) return 'upcoming';
+  if (now > end) return 'expired';
+  return 'active';
 };
 
 /**
@@ -44,9 +34,10 @@ export const createOffer = async (req, res, next) => {
       return next(new Error('bannerImage must contain public_id and url'));
     }
 
-    if (discountPercentage < 0 || discountPercentage > 100) {
+    const discountNum = Number(discountPercentage);
+    if (isNaN(discountNum) || discountNum < 1 || discountNum > 100) {
       res.status(400);
-      return next(new Error('Discount percentage must be between 0 and 100'));
+      return next(new Error('Discount percentage must be between 1 and 100'));
     }
 
     const start = new Date(startDate);
@@ -57,21 +48,12 @@ export const createOffer = async (req, res, next) => {
       return next(new Error('End date must be on or after start date'));
     }
 
-    // 2. Overlap Check
-    const overlapping = await checkOverlap(startDate, endDate);
-    if (overlapping) {
-      res.status(400);
-      return next(
-        new Error(`This offer overlaps with an existing active offer: "${overlapping.title}" (ends ${overlapping.endDate.toISOString().split('T')[0]})`)
-      );
-    }
-
-    // 3. Create Offer
+    // Create Offer
     const newOffer = await Offer.create({
       title,
       description,
       bannerImage,
-      discountPercentage,
+      discountPercentage: discountNum,
       startDate: start,
       endDate: end,
     });
@@ -102,9 +84,13 @@ export const updateOffer = async (req, res, next) => {
     }
 
     // Validate range if updated
-    if (updateData.discountPercentage !== undefined && (updateData.discountPercentage < 0 || updateData.discountPercentage > 100)) {
-      res.status(400);
-      return next(new Error('Discount percentage must be between 0 and 100'));
+    if (updateData.discountPercentage !== undefined) {
+      const discountNum = Number(updateData.discountPercentage);
+      if (isNaN(discountNum) || discountNum < 1 || discountNum > 100) {
+        res.status(400);
+        return next(new Error('Discount percentage must be between 1 and 100'));
+      }
+      updateData.discountPercentage = discountNum;
     }
 
     // Validate dates if updated
@@ -114,20 +100,6 @@ export const updateOffer = async (req, res, next) => {
     if (start > end) {
       res.status(400);
       return next(new Error('End date must be on or after start date'));
-    }
-
-    // Check overlap if dates or status are updated to active
-    const isNowActive = updateData.status !== 'inactive' && updateData.isActive !== false;
-    const wasActive = offer.status === 'active' && offer.isActive === true;
-    
-    if (isNowActive && (updateData.startDate || updateData.endDate || (!wasActive && (updateData.status || updateData.isActive !== undefined)))) {
-      const overlapping = await checkOverlap(start, end, id);
-      if (overlapping) {
-        res.status(400);
-        return next(
-          new Error(`This offer overlaps with an existing active offer: "${overlapping.title}" (ends ${overlapping.endDate.toISOString().split('T')[0]})`)
-        );
-      }
     }
 
     // Banner image cleanup on change
@@ -140,6 +112,7 @@ export const updateOffer = async (req, res, next) => {
     }
 
     // Apply updates
+    delete updateData.status; // Prevent manual status override from body
     Object.assign(offer, updateData);
     const updatedOffer = await offer.save();
 
@@ -167,13 +140,21 @@ export const deleteOffer = async (req, res, next) => {
       return next(new Error('Offer not found'));
     }
 
-    offer.isActive = false;
-    offer.status = 'inactive';
-    await offer.save();
+    // Banner image cleanup on delete
+    if (offer.bannerImage && offer.bannerImage.public_id && !offer.bannerImage.public_id.startsWith('local_')) {
+      try {
+        await cloudinary.uploader.destroy(offer.bannerImage.public_id);
+      } catch (err) {
+        console.error(`Failed to delete offer banner image ${offer.bannerImage.public_id} from Cloudinary:`, err);
+      }
+    }
+
+    // Permanently remove offer from database
+    await Offer.findByIdAndDelete(id);
 
     res.status(200).json({
       success: true,
-      message: 'Offer soft-deleted successfully',
+      message: 'Offer deleted successfully',
     });
   } catch (error) {
     next(error);
@@ -195,17 +176,7 @@ export const restoreOffer = async (req, res, next) => {
       return next(new Error('Offer not found'));
     }
 
-    // Before restoring, check if it would overlap with other active offers
-    const overlapping = await checkOverlap(offer.startDate, offer.endDate, id);
-    if (overlapping) {
-      res.status(400);
-      return next(
-        new Error(`Cannot restore. This offer overlaps with an existing active offer: "${overlapping.title}"`)
-      );
-    }
-
     offer.isActive = true;
-    offer.status = 'active';
     await offer.save();
 
     res.status(200).json({
@@ -227,16 +198,16 @@ export const getAllOffers = async (req, res, next) => {
   try {
     const { page = 1, limit = 10, sort, includeInactive } = req.query;
 
-    const query = {};
+    const query = { isActive: true };
 
-    // 1. Admin optional protect check: default view only shows active & valid current date ranges
+    // 1. Admin optional protect check
     const isAdmin = req.user && (req.user.role === 'admin' || req.user.role === 'superadmin');
     if (isAdmin && includeInactive === 'true') {
-      // Admin sees everything
+      // Admin sees all non-deleted active documents
+      query.isActive = true;
     } else {
       const currentDate = new Date();
       query.isActive = true;
-      query.status = 'active';
       query.startDate = { $lte: currentDate };
       query.endDate = { $gte: currentDate };
     }
@@ -256,10 +227,17 @@ export const getAllOffers = async (req, res, next) => {
 
     // 4. Database execution
     const totalOffers = await Offer.countDocuments(query);
-    const offers = await Offer.find(query)
+    const rawOffers = await Offer.find(query)
       .sort(sortQuery)
       .skip(skip)
       .limit(limitNum);
+
+    // Dynamic status computation for every offer object returned
+    const offers = rawOffers.map((off) => {
+      const obj = off.toObject();
+      obj.status = computeOfferStatus(obj.startDate, obj.endDate);
+      return obj;
+    });
 
     const totalPages = Math.ceil(totalOffers / limitNum);
 
@@ -290,20 +268,25 @@ export const getOfferById = async (req, res, next) => {
       return next(new Error('Offer not found'));
     }
 
+    const computedStatus = computeOfferStatus(offer.startDate, offer.endDate);
+
     // Verify access if public user
     const isAdmin = req.user && (req.user.role === 'admin' || req.user.role === 'superadmin');
     if (!isAdmin) {
       const currentDate = new Date();
       const isValidDate = offer.startDate <= currentDate && offer.endDate >= currentDate;
-      if (!offer.isActive || offer.status !== 'active' || !isValidDate) {
+      if (!offer.isActive || computedStatus !== 'active' || !isValidDate) {
         res.status(404);
         return next(new Error('Offer not found or has expired'));
       }
     }
 
+    const offerObj = offer.toObject();
+    offerObj.status = computedStatus;
+
     res.status(200).json({
       success: true,
-      offer,
+      offer: offerObj,
     });
   } catch (error) {
     next(error);

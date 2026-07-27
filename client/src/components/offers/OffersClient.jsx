@@ -5,14 +5,14 @@ import Loading from '@/components/ui/Loading.jsx';
 import Error from '@/components/ui/Error.jsx';
 import EmptyState from '@/components/ui/EmptyState.jsx';
 import offerService from '@/services/offer.service.js';
-import OfferBanner from '@/components/sections/offers/OfferBanner.jsx';
+import OfferCarousel from '@/components/sections/offers/OfferCarousel.jsx';
 
 import OffersPageHeader from './OffersPageHeader.jsx';
 import OffersGrid from './OffersGrid.jsx';
 
 /**
  * OffersClient coordinator component.
- * Coordinates fetching campaigns, separates featured active banners, and renders lists.
+ * Coordinates fetching campaigns, renders 3-second automated offer carousel with hover hold, and lists all campaigns.
  */
 export const OffersClient = () => {
   const [offers, setOffers] = useState([]);
@@ -55,25 +55,22 @@ export const OffersClient = () => {
     };
   }, [fetchOffersList]);
 
-  // 1. Identify active offers to select the latest one for the Featured Banner
+  // Identify active and upcoming offers for the automated carousel
   const activeOffers = offers.filter((o) => {
-    const isBackendActive = o.status === 'active' && o.isActive === true;
+    const isUpcomingOrActive = o.status === 'active' || o.status === 'upcoming';
     const isDateExpired = o.endDate ? new Date(o.endDate) < new Date() : false;
-    return isBackendActive && !isDateExpired;
+    return isUpcomingOrActive && !isDateExpired;
   });
 
-  // Pick the latest/first active offer as featured
-  const featuredOffer = activeOffers.length > 0 ? activeOffers[0] : null;
-
-  // 2. Filter out the featured offer from the remaining grid listing
-  const gridOffers = featuredOffer
-    ? offers.filter((o) => o._id !== featuredOffer._id && o.id !== featuredOffer.id)
-    : offers;
+  // Display offers carousel fallback to all fetched offers if none strictly filtered
+  const carouselOffers = activeOffers.length > 0 ? activeOffers : offers;
 
   return (
-    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16 space-y-12">
-      {/* Editorial Header */}
+    <div className="w-full bg-neutral-50 min-h-screen">
+      {/* Editorial Dark Hero Header */}
       <OffersPageHeader />
+
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pb-20 space-y-12">
 
       {loading ? (
         <div className="flex flex-col items-center justify-center py-24 min-h-[300px]">
@@ -95,42 +92,39 @@ export const OffersClient = () => {
         </div>
       ) : (
         <div className="space-y-16">
-          {/* Featured Active Offer Block (Only show if at least one active offer exists) */}
-          {featuredOffer && (
+          {/* Featured Carousel Block (3-second auto slide with hover pause) */}
+          {carouselOffers.length > 0 && (
             <div className="space-y-6">
               <div className="space-y-1">
                 <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-secondary">
-                  SPOTLIGHT DEAL
+                  SPOTLIGHT DEALS
                 </span>
                 <h2 className="text-xl font-bold tracking-tight text-neutral-900">
-                  Featured Promotion
+                  Featured Promotional Banners
                 </h2>
               </div>
-              <div className="border border-neutral-100 rounded-3xl overflow-hidden shadow-xs">
-                <OfferBanner offer={featuredOffer} />
-              </div>
+              <OfferCarousel offers={carouselOffers} />
             </div>
           )}
 
-          {/* Grid section */}
-          {gridOffers.length > 0 && (
+          {/* Grid listing section */}
+          {offers.length > 0 && (
             <div className="space-y-8">
-              {(featuredOffer) && (
-                <div className="space-y-1">
-                  <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-neutral-400">
-                    ADDITIONAL DEALS
-                  </span>
-                  <h3 className="text-xl font-bold tracking-tight text-neutral-900">
-                    All Active & Past Campaigns
-                  </h3>
-                </div>
-              )}
-              <OffersGrid offers={gridOffers} />
+              <div className="space-y-1">
+                <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-neutral-400">
+                  CAMPAIGNS DIRECTORY
+                </span>
+                <h3 className="text-xl font-bold tracking-tight text-neutral-900">
+                  All Promotional Offers
+                </h3>
+              </div>
+              <OffersGrid offers={offers} />
             </div>
           )}
         </div>
       )}
     </div>
+  </div>
   );
 };
 

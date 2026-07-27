@@ -6,23 +6,23 @@
 
 export const HERO_CONFIG = {
   // Editorial label shown at the top
-  label: "Premium Men's Collection",
+  label: "MEN'S FASHION STORE • GWALIOR",
   
   // Editorial main header text
-  title: 'Premium Ethnic Wear For The Modern Gentleman',
+  title: "Trendy Men's Wear At Affordable Prices",
   
   // Detailed description copy
-  description: 'Discover premium kurtas, sherwanis, Nehru jackets and ethnic wear crafted for weddings, festivals and every special occasion.',
+  description: 'Discover stylish Polo T-Shirts, Shirts, Jeans, Trousers, Lowers, Belts and Kids Wear at Mahakaal Fashion Trends. Visit our store in Birla Nagar, Gwalior for quality products at affordable prices.',
   
   // Primary CTA Button options
   primaryCta: {
-    label: 'Shop Collection',
+    label: 'SHOP NOW',
     href: '/products',
   },
   
   // Secondary CTA Button options
   secondaryCta: {
-    label: 'Explore Categories',
+    label: 'VIEW CATEGORIES',
     href: '/categories',
   },
   

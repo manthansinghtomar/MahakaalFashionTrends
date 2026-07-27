@@ -79,7 +79,7 @@ export const Footer = () => {
                 <span className="font-semibold text-neutral-900">Email</span>
                 <a
                   href={`mailto:${FOOTER_CONTACT.email}`}
-                  className="hover:text-secondary transition focus:outline-none"
+                  className="hover:text-secondary transition focus:outline-none break-all"
                 >
                   {FOOTER_CONTACT.email}
                 </a>

@@ -8,6 +8,7 @@ import EmptyState from '@/components/ui/EmptyState.jsx';
  */
 export const OffersTable = ({
   offers = [],
+  onView,
   onEdit,
   onDelete,
 }) => {
@@ -107,16 +108,15 @@ export const OffersTable = ({
 
                   {/* Actions */}
                   <td className="p-4 pr-6 text-right space-x-2.5 whitespace-nowrap">
-                    {/* Preview Button -> links to public offers view */}
-                    <a
-                      href="/offers"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center text-xs font-bold text-neutral-500 hover:text-neutral-900 transition-colors"
-                      title="Preview campaign details on public offers page"
+                    {/* View Button -> opens in-console ViewOfferModal */}
+                    <button
+                      type="button"
+                      onClick={() => onView && onView(off)}
+                      className="inline-flex items-center text-xs font-bold text-neutral-600 hover:text-neutral-900 transition-colors"
+                      title="View offer details modal"
                     >
-                      Preview
-                    </a>
+                      View
+                    </button>
 
                     {/* Edit Button */}
                     <button

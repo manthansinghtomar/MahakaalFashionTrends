@@ -13,9 +13,12 @@ export const OfferStatusBadge = ({ status = 'active' }) => {
   if (normStatus === 'active') {
     styles = 'bg-emerald-50 text-emerald-700 border-emerald-200';
     label = 'Active';
-  } else if (normStatus === 'inactive') {
-    styles = 'bg-neutral-50 text-neutral-500 border-neutral-200';
-    label = 'Inactive';
+  } else if (normStatus === 'upcoming') {
+    styles = 'bg-amber-50 text-amber-700 border-amber-200';
+    label = 'Upcoming';
+  } else if (normStatus === 'expired') {
+    styles = 'bg-rose-50 text-rose-700 border-rose-200';
+    label = 'Expired';
   }
 
   return (

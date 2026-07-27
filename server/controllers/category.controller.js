@@ -73,9 +73,10 @@ export const createCategory = async (req, res, next) => {
       name: name.trim(),
       slug,
       image,
-      description,
-      displayOrder,
+      description: description ? description.trim() : '',
+      displayOrder: displayOrder !== undefined ? Number(displayOrder) : 0,
       parent: parent || null,
+      status: 'active',
     });
 
     res.status(201).json({
@@ -114,9 +115,10 @@ export const updateCategory = async (req, res, next) => {
         return next(new Error('Category name already exists'));
       }
       updateData.name = updateData.name.trim();
-      // Slug is kept stable unless name changes
-      updateData.slug = await generateUniqueSlug(updateData.name, id);
     }
+
+    // Do NOT automatically regenerate slug when editing name (keep existing slug stable)
+    delete updateData.slug;
 
     // Check parent if provided
     if (updateData.parent) {
@@ -154,7 +156,7 @@ export const updateCategory = async (req, res, next) => {
 };
 
 /**
- * @desc    Soft Delete Category (Admin only)
+ * @desc    Delete Category (Admin only)
  * @route   DELETE /api/categories/:id
  * @access  Private (Admin/Superadmin)
  */
@@ -175,14 +177,21 @@ export const deleteCategory = async (req, res, next) => {
       return next(new Error('This category cannot be deleted because it is assigned to existing products.'));
     }
 
-    // 2. Perform soft-delete
-    category.isActive = false;
-    category.status = 'inactive';
-    await category.save();
+    // 2. Destroy image on Cloudinary if present
+    if (category.image && category.image.public_id) {
+      try {
+        await cloudinary.uploader.destroy(category.image.public_id);
+      } catch (err) {
+        console.error(`Failed to delete category image ${category.image.public_id} from Cloudinary:`, err);
+      }
+    }
+
+    // 3. Remove category from database
+    await Category.findByIdAndDelete(id);
 
     res.status(200).json({
       success: true,
-      message: 'Category soft-deleted successfully',
+      message: 'Category deleted successfully',
     });
   } catch (error) {
     next(error);

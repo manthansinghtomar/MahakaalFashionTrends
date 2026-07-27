@@ -1,8 +1,9 @@
 import React from 'react';
+import Container from '@/components/ui/Container.jsx';
 
 /**
  * Editorial header for the Products Listing page.
- * Dynamically updates its title when a category filter is active.
+ * Features dark theme hero style matching Contact page with gold accents.
  */
 export const ProductsPageHeader = ({ activeCategoryName }) => {
   const displayTitle = activeCategoryName 
@@ -10,21 +11,37 @@ export const ProductsPageHeader = ({ activeCategoryName }) => {
     : 'Shop Collection';
 
   const displayDescription = activeCategoryName
-    ? `Explore our curated selection of premium men's ethnic wear in the ${activeCategoryName.toLowerCase()} range, designed for luxury and fit.`
-    : "Discover our full catalog of premium men's ethnicwear, wedding sherwanis, elegant Nehru jackets, and designer kurtas handcrafted for the modern gentleman.";
+    ? `Explore our curated selection of premium clothing in the ${activeCategoryName.toLowerCase()} range, designed for style and comfort.`
+    : "Discover our full catalog of Polo T-Shirts, Shirts, Jeans, Trousers, Lowers, Belts, and Kids Wear handcrafted for every occasion.";
 
   return (
-    <div className="flex flex-col items-center text-center space-y-4 mb-12 max-w-3xl mx-auto">
-      <span className="text-xs font-semibold uppercase tracking-[0.25em] text-secondary">
-        ESTABLISHED ELEGANCE
-      </span>
-      <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-neutral-900 leading-tight">
-        {displayTitle}
-      </h1>
-      <p className="text-sm sm:text-base text-neutral-500 leading-relaxed max-w-2xl">
-        {displayDescription}
-      </p>
-    </div>
+    <section className="relative w-full bg-neutral-950 text-white py-20 overflow-hidden border-b border-neutral-900 mb-12">
+      {/* Premium Luxury Background Accents */}
+      <div 
+        className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_top,_#d9a05b_0%,_transparent_55%)] opacity-15" 
+        aria-hidden="true"
+      />
+      
+      {/* Decorative Grid Line Overlays */}
+      <div 
+        className="absolute inset-0 opacity-[0.02] pointer-events-none bg-[linear-gradient(to_right,#808080_1px,transparent_1px),linear-gradient(to_bottom,#808080_1px,transparent_1px)] bg-[size:24px_24px]" 
+        aria-hidden="true"
+      />
+
+      <Container className="relative z-10 text-center flex flex-col items-center">
+        <span className="text-xs font-semibold uppercase tracking-[0.25em] text-secondary mb-4">
+          ESTABLISHED ELEGANCE
+        </span>
+
+        <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-white mb-4">
+          {displayTitle}
+        </h1>
+
+        <p className="text-sm sm:text-base text-neutral-300 max-w-xl mx-auto leading-relaxed">
+          {displayDescription}
+        </p>
+      </Container>
+    </section>
   );
 };
 

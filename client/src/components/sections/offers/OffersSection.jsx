@@ -4,38 +4,34 @@ import React, { useState, useEffect, useCallback } from 'react';
 import Loading from '@/components/ui/Loading.jsx';
 import Error from '@/components/ui/Error.jsx';
 import offerService from '@/services/offer.service.js';
-import OfferBanner from './OfferBanner.jsx';
+import OfferCarousel from './OfferCarousel.jsx';
 
 /**
  * OffersSection component for the homepage.
- * Fetches the active offers from backend on mount.
- * Renders the highest priority (latest) active offer in a premium banner.
- * Hides itself completely if no active offers exist.
+ * Fetches all active offers from backend and renders an automated 3-second carousel slider.
+ * Pauses automatically when the user hovers their cursor over the banner.
  */
 export const OffersSection = () => {
-  const [offer, setOffer] = useState(null);
+  const [offers, setOffers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const fetchActiveOffer = useCallback(async (signal = null) => {
+  const fetchActiveOffers = useCallback(async (signal = null) => {
     try {
       setLoading(true);
       setError(null);
 
-      // Fetch active offers. We request the first page with a small limit,
-      // as we only need the latest active offer.
+      // Fetch active offers listing
       const response = await offerService.getAllOffers({
         page: 1,
-        limit: 5, // fetch a few to choose from if needed
+        limit: 10,
         ...(signal ? { signal } : {}),
       });
 
       if (response && response.success && response.offers && response.offers.length > 0) {
-        // Since backend already sorts active offers by createdAt desc,
-        // response.offers[0] is the latest active offer.
-        setOffer(response.offers[0]);
+        setOffers(response.offers);
       } else {
-        setOffer(null);
+        setOffers([]);
       }
     } catch (err) {
       if (err.name !== 'CanceledError' && err.message !== 'canceled') {
@@ -50,12 +46,12 @@ export const OffersSection = () => {
 
   useEffect(() => {
     const controller = new AbortController();
-    fetchActiveOffer(controller.signal);
+    fetchActiveOffers(controller.signal);
 
     return () => {
       controller.abort();
     };
-  }, [fetchActiveOffer]);
+  }, [fetchActiveOffers]);
 
   if (loading) {
     return (
@@ -71,21 +67,21 @@ export const OffersSection = () => {
     return (
       <section className="w-full bg-white py-20 border-b border-neutral-100">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <Error message={error} retry={() => fetchActiveOffer()} />
+          <Error message={error} retry={() => fetchActiveOffers()} />
         </div>
       </section>
     );
   }
 
-  // If no active offers exist, do not render the section at all.
-  if (!offer) {
+  // If no active offers exist, do not render the section
+  if (offers.length === 0) {
     return null;
   }
 
   return (
     <section className="w-full bg-white py-20 border-b border-neutral-100" aria-label="Promotional Offers">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <OfferBanner offer={offer} />
+        <OfferCarousel offers={offers} />
       </div>
     </section>
   );

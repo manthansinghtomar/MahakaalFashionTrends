@@ -8,6 +8,7 @@ import EmptyState from '@/components/ui/EmptyState.jsx';
  */
 export const CategoriesTable = ({
   categories = [],
+  onView,
   onEdit,
   onDelete,
 }) => {
@@ -111,16 +112,15 @@ export const CategoriesTable = ({
 
                   {/* Actions */}
                   <td className="p-4 pr-6 text-right space-x-2.5 whitespace-nowrap">
-                    {/* View Button -> links to public category products */}
-                    <a
-                      href={`/products?category=${cat.slug}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center text-xs font-bold text-neutral-500 hover:text-neutral-900 transition-colors"
-                      title="View category page in new tab"
+                    {/* View Button -> Opens admin ViewCategoryModal */}
+                    <button
+                      type="button"
+                      onClick={() => onView && onView(cat)}
+                      className="inline-flex items-center text-xs font-bold text-neutral-600 hover:text-neutral-900 transition-colors"
+                      title="View category details modal"
                     >
                       View
-                    </a>
+                    </button>
 
                     {/* Edit Button */}
                     <button

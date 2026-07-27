@@ -136,11 +136,12 @@ export const ProductsListClient = () => {
   const activeCategoryName = activeCategory ? activeCategory.name : '';
 
   return (
-    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
-      {/* Dynamic Page Header */}
+    <div className="w-full bg-neutral-50 min-h-screen">
+      {/* Dynamic Full-Width Dark Hero Header */}
       <ProductsPageHeader activeCategoryName={activeCategoryName} />
 
-      {/* Toolbar Filter panel */}
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pb-20">
+        {/* Toolbar Filter panel */}
       <ProductsToolbar
         totalProducts={totalProducts}
         categories={categories}
@@ -194,6 +195,7 @@ export const ProductsListClient = () => {
         </>
       )}
     </div>
+  </div>
   );
 };
 

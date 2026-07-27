@@ -79,7 +79,7 @@ export const NewArrivalsSection = ({ products: initialProducts = null }) => {
               New Arrivals
             </h2>
             <p className="text-base text-neutral-500 leading-relaxed">
-              Explore the latest additions to our premium men's ethnic wear collection.
+              Discover the newest arrivals in men's fashion, including stylish Shirts, Polo T-Shirts, Jeans, Trousers, and more at affordable prices.
             </p>
           </div>
           

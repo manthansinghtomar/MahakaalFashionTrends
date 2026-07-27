@@ -56,11 +56,12 @@ export const CategoriesClient = () => {
   }, [fetchCategoriesList]);
 
   return (
-    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
-      {/* 1. Header */}
+    <div className="w-full bg-neutral-50 min-h-screen">
+      {/* 1. Full-Width Dark Hero Header */}
       <CategoriesPageHeader />
 
-      {/* 2. State coordination */}
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pb-20">
+        {/* 2. State coordination */}
       {loading ? (
         <div className="flex flex-col items-center justify-center py-24 min-h-[300px]">
           <Loading size="lg" />
@@ -84,6 +85,7 @@ export const CategoriesClient = () => {
         <CategoriesGrid categories={categories} />
       )}
     </div>
+  </div>
   );
 };
 

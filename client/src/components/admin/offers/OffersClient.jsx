@@ -10,6 +10,7 @@ import OffersToolbar from './OffersToolbar.jsx';
 import OffersTable from './OffersTable.jsx';
 import OfferFormModal from './OfferFormModal.jsx';
 import DeleteOfferModal from './DeleteOfferModal.jsx';
+import ViewOfferModal from './ViewOfferModal.jsx';
 
 /**
  * OffersClient component (Client Coordinator).
@@ -30,6 +31,10 @@ export const OffersClient = () => {
   // States
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  // View Modal States
+  const [isViewOpen, setIsViewOpen] = useState(false);
+  const [viewingOffer, setViewingOffer] = useState(null);
 
   // Form Modal States
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -205,6 +210,10 @@ export const OffersClient = () => {
         <div className="space-y-6">
           <OffersTable
             offers={offers}
+            onView={(off) => {
+              setViewingOffer(off);
+              setIsViewOpen(true);
+            }}
             onEdit={(off) => {
               setEditingOffer(off);
               setIsFormOpen(true);
@@ -244,6 +253,20 @@ export const OffersClient = () => {
           )}
         </div>
       )}
+
+      {/* View Details Preview Modal */}
+      <ViewOfferModal
+        isOpen={isViewOpen}
+        onClose={() => {
+          setIsViewOpen(false);
+          setViewingOffer(null);
+        }}
+        offer={viewingOffer}
+        onEdit={(off) => {
+          setEditingOffer(off);
+          setIsFormOpen(true);
+        }}
+      />
 
       {/* Create/Edit Form Modal */}
       <OfferFormModal

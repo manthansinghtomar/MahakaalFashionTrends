@@ -62,23 +62,21 @@ export const OfferCard = ({ offer }) => {
         </span>
 
         {hasImage ? (
-          isRemote ? (
+          <div className="w-full h-full relative flex items-center justify-center p-3 bg-neutral-950">
+            <img
+              src={imageUrl}
+              alt=""
+              aria-hidden="true"
+              className="absolute inset-0 w-full h-full object-cover object-center filter blur-xl opacity-30 scale-125 pointer-events-none"
+            />
             <img
               src={imageUrl}
               alt={title}
               onError={() => setImageError(true)}
-              className="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-103"
+              className="relative z-1 max-w-full max-h-full w-auto h-auto object-contain object-center transition-transform duration-700 group-hover:scale-105 drop-shadow-md rounded-lg"
               loading="lazy"
             />
-          ) : (
-            <img
-              src={imageUrl}
-              alt={title}
-              onError={() => setImageError(true)}
-              className="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-103"
-              loading="lazy"
-            />
-          )
+          </div>
         ) : (
           /* Premium fallback gradient */
           <div className="w-full h-full flex flex-col justify-between p-6 bg-gradient-to-br from-neutral-900 to-neutral-950 text-white">

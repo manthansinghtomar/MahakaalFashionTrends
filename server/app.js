@@ -9,6 +9,7 @@ import productRouter from './routes/product.routes.js';
 import categoryRouter from './routes/category.routes.js';
 import offerRouter from './routes/offer.routes.js';
 import contactRouter from './routes/contact.routes.js';
+import newsletterRouter from './routes/newsletter.routes.js';
 import dashboardRouter from './routes/admin.dashboard.routes.js';
 
 // Load environment variables
@@ -35,6 +36,7 @@ app.use('/api/products', productRouter);
 app.use('/api/categories', categoryRouter);
 app.use('/api/offers', offerRouter);
 app.use('/api/contact', contactRouter);
+app.use('/api/newsletter', newsletterRouter);
 app.use('/api/admin', dashboardRouter);
 
 // Base Route

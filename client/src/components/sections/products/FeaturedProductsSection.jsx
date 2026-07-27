@@ -64,13 +64,13 @@ export const FeaturedProductsSection = () => {
         <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-16">
           <div className="space-y-4 max-w-xl">
             <span className="text-xs font-semibold uppercase tracking-[0.25em] text-secondary block">
-              Exquisite Designs
+              BESTSELLING PRODUCTS
             </span>
             <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-neutral-900">
-              Featured Collection
+              Featured Products
             </h2>
             <p className="text-base text-neutral-500 leading-relaxed">
-              Handpicked premium ethnic clothing and designer traditional kurtas showcasing legacy style.
+              Discover our most popular men's fashion products, including Polo T-Shirts, Shirts, Jeans, Trousers, Lowers, Belts and Kids Wear at affordable prices.
             </p>
           </div>
           

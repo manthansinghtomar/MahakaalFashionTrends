@@ -22,6 +22,7 @@ export const ROUTES = {
   ADMIN_CATEGORIES: '/admin/categories',
   ADMIN_OFFERS: '/admin/offers',
   ADMIN_CONTACTS: '/admin/contacts',
+  ADMIN_SUBSCRIBERS: '/admin/subscribers',
   ADMIN_SETTINGS: '/admin/settings',
 };
 
@@ -56,6 +57,7 @@ export const ADMIN_ROUTES = [
   ROUTES.ADMIN_CATEGORIES,
   ROUTES.ADMIN_OFFERS,
   ROUTES.ADMIN_CONTACTS,
+  ROUTES.ADMIN_SUBSCRIBERS,
   ROUTES.ADMIN_SETTINGS,
 ];
 
@@ -90,6 +92,11 @@ export const API_ENDPOINTS = {
     BY_ID: (id) => `/contact/${id}`,
     READ: (id) => `/contact/${id}/read`,
     ARCHIVE: (id) => `/contact/${id}/archive`,
+  },
+  NEWSLETTER: {
+    BASE: '/newsletter',
+    SUBSCRIBE: '/newsletter/subscribe',
+    BY_ID: (id) => `/newsletter/${id}`,
   },
   ADMIN: {
     DASHBOARD: '/admin/dashboard',

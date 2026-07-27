@@ -1,60 +1,62 @@
-import React from 'react';
+"use client";
+
+import React, { useState } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import Button from '@/components/ui/Button.jsx';
 
 /**
  * Reusable Category Card component.
- * Wraps the entire card inside a link matching the category slug.
+ * Wraps the entire card inside a link matching `/products?category=${slug}`.
  * Images are formatted to a fixed 4:5 aspect ratio and animate on hover.
  */
 export const CategoryCard = ({ category }) => {
-  const { name, slug, image, description } = category;
+  const { name, slug, image, description } = category || {};
+  const [imageError, setImageError] = useState(false);
 
   if (!slug) return null;
 
-  // Support local relative paths and remote CDN/Cloudinary URLs dynamically
-  const isRemote = image && (image.startsWith('http://') || image.startsWith('https://'));
+  // Support image as string or object { url, public_id } from DB
+  const imageUrl = typeof image === 'object' && image ? image.url : image;
+  const hasImage = imageUrl && !imageError;
 
   return (
     <Link
-      href={`/categories/${slug}`}
-      className="group block bg-white rounded-lg border border-neutral-100 overflow-hidden shadow-sm hover:shadow-md hover:border-neutral-200 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-secondary focus:ring-offset-2"
+      href={`/products?category=${slug}`}
+      className="group block bg-white rounded-xl border border-neutral-100 overflow-hidden shadow-xs hover:shadow-md hover:border-neutral-200 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-secondary focus:ring-offset-2"
     >
       {/* Aspect Ratio 4:5 Image Wrapper */}
       <div className="relative w-full aspect-[4/5] overflow-hidden bg-neutral-50 border-b border-neutral-100">
-        {image ? (
-          isRemote ? (
-            <img
-              src={image}
-              alt={name}
-              className="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
-              loading="lazy"
-            />
-          ) : (
-            <Image
-              src={image}
-              alt={name}
-              fill
-              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-              className="object-cover object-center transition-transform duration-700 group-hover:scale-105"
-            />
-          )
+        {hasImage ? (
+          <img
+            src={imageUrl}
+            alt={name}
+            onError={() => setImageError(true)}
+            className="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
+            loading="lazy"
+          />
         ) : (
-          <div className="w-full h-full flex items-center justify-center text-neutral-300">
-            <svg
-              className="h-12 w-12"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={1.5}
-                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-              />
-            </svg>
+          <div className="w-full h-full flex flex-col justify-between p-6 bg-gradient-to-br from-neutral-50 to-neutral-100/50">
+            <div className="flex justify-between items-center">
+              <span className="text-[9px] tracking-[0.2em] uppercase text-neutral-400 font-bold">
+                MAHAKAAL
+              </span>
+              <span className="w-1.5 h-1.5 rounded-full bg-secondary" />
+            </div>
+            
+            <div className="my-auto py-6 text-center flex flex-col items-center">
+              <div className="w-12 h-12 rounded-full bg-neutral-100 flex items-center justify-center mb-3 text-neutral-400">
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.25 10.5a.75.75 0 100-1.5.75.75 0 000 1.5zm7.5 0a.75.75 0 100-1.5.75.75 0 000 1.5z" />
+                </svg>
+              </div>
+              <span className="text-[10px] text-neutral-400 font-bold uppercase tracking-widest">
+                {name}
+              </span>
+            </div>
+            
+            <div className="text-[9px] text-neutral-400">
+              Mahakaal Fashion Trends
+            </div>
           </div>
         )}
       </div>

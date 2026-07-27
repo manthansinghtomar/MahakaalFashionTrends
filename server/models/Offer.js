@@ -36,7 +36,7 @@ const offerSchema = new mongoose.Schema(
     status: {
       type: String,
       enum: {
-        values: ['active', 'inactive'],
+        values: ['upcoming', 'active', 'expired'],
         message: '{VALUE} is not a valid offer status',
       },
       default: 'active',
@@ -44,8 +44,8 @@ const offerSchema = new mongoose.Schema(
     discountPercentage: {
       type: Number,
       required: [true, 'Discount percentage is required'],
-      min: [0, 'Discount cannot be less than 0%'],
-      max: [100, 'Discount cannot exceed 100%'],
+      min: [1, 'Discount percentage must be between 1% and 100%'],
+      max: [100, 'Discount percentage must be between 1% and 100%'],
     },
     startDate: {
       type: Date,
@@ -70,6 +70,21 @@ const offerSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+
+// Automatically set status based on startDate and endDate relative to current time
+offerSchema.pre('save', function () {
+  const now = new Date();
+  const start = new Date(this.startDate);
+  const end = new Date(this.endDate);
+
+  if (now < start) {
+    this.status = 'upcoming';
+  } else if (now > end) {
+    this.status = 'expired';
+  } else {
+    this.status = 'active';
+  }
+});
 
 const Offer = mongoose.model('Offer', offerSchema);
 export default Offer;
