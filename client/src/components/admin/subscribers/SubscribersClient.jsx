@@ -140,9 +140,9 @@ export const SubscribersClient = () => {
       </div>
 
       {/* Toolbar Controls */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 p-4 bg-white rounded-2xl border border-neutral-100 shadow-xs">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 p-4 bg-white rounded-2xl border border-neutral-100 shadow-xs w-full min-w-0">
         {/* Search Input */}
-        <div className="relative flex-1">
+        <div className="relative flex-1 w-full">
           <svg className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-400" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
@@ -156,13 +156,13 @@ export const SubscribersClient = () => {
         </div>
 
         {/* Sort Controls */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 w-full sm:w-auto">
           <label htmlFor="sort-subscribers" className="sr-only">Sort subscribers</label>
           <select
             id="sort-subscribers"
             value={sort}
             onChange={(e) => setSort(e.target.value)}
-            className="px-3.5 py-2.5 bg-neutral-50 border border-neutral-200 rounded-xl text-xs font-semibold text-neutral-700 outline-none focus:border-secondary focus:bg-white transition-all cursor-pointer"
+            className="flex-1 sm:flex-none px-3.5 py-2.5 bg-neutral-50 border border-neutral-200 rounded-xl text-xs font-semibold text-neutral-700 outline-none focus:border-secondary focus:bg-white transition-all cursor-pointer"
           >
             <option value="newest">Sort by Newest</option>
             <option value="oldest">Sort by Oldest</option>
@@ -172,7 +172,7 @@ export const SubscribersClient = () => {
           <button
             type="button"
             onClick={() => fetchSubscribers()}
-            className="p-2.5 bg-neutral-50 border border-neutral-200 hover:bg-neutral-100 text-neutral-600 rounded-xl transition-all"
+            className="p-2.5 bg-neutral-50 border border-neutral-200 hover:bg-neutral-100 text-neutral-600 rounded-xl transition-all shrink-0"
             title="Refresh list"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
@@ -216,10 +216,10 @@ export const SubscribersClient = () => {
         </div>
       ) : (
         /* Data Table */
-        <div className="space-y-6">
-          <div className="bg-white rounded-2xl border border-neutral-100 overflow-hidden shadow-xs">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse">
+        <div className="space-y-6 w-full min-w-0">
+          <div className="bg-white rounded-2xl border border-neutral-100 overflow-hidden shadow-xs w-full min-w-0">
+            <div className="overflow-x-auto w-full max-w-full scrollbar-thin">
+              <table className="w-full min-w-[550px] text-left border-collapse">
                 <thead>
                   <tr className="bg-neutral-50/80 border-b border-neutral-100 text-[11px] font-bold uppercase tracking-wider text-neutral-400">
                     <th className="py-4 px-6">#</th>

@@ -58,8 +58,8 @@ export const AuthLayout = ({ children, type = 'login' }) => {
 
         {/* Content Card Wrapper */}
         <div className="w-full max-w-md bg-white border border-neutral-100 rounded-3xl p-8 sm:p-10 shadow-xs">
-          {/* Centered Brand Emblem for Form Header */}
-          <div className="flex justify-center mb-6">
+          {/* Centered Brand Emblem for Form Header (Desktop only) */}
+          <div className="hidden lg:flex justify-center mb-6">
             <Link href="/" className="inline-flex items-center focus:outline-none">
               <Logo variant="light" imgSize="w-20 h-20 sm:w-24 sm:h-24" showText={false} />
             </Link>

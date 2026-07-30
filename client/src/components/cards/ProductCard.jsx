@@ -1,4 +1,5 @@
 import React from 'react';
+import { formatRupees } from '@/utils/currency.js';
 
 /**
  * Placeholder component for rendering individual products in catalog grids.
@@ -19,7 +20,7 @@ export const ProductCard = ({ product }) => {
           </h3>
           <p className="mt-1 text-xs text-neutral-500">{product?.brand || 'Brand'}</p>
         </div>
-        <p className="text-sm font-bold text-neutral-900">${product?.price || '0.00'}</p>
+        <p className="text-sm font-bold text-neutral-900">₹{formatRupees(product?.price)}</p>
       </div>
     </div>
   );

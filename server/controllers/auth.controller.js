@@ -1,6 +1,10 @@
+import crypto from 'crypto';
+import bcrypt from 'bcryptjs';
 import User from '../models/User.js';
 import Admin from '../models/Admin.js';
+import Otp from '../models/Otp.js';
 import jwt from 'jsonwebtoken';
+import { sendOtpEmail } from '../utils/emailService.js';
 
 /**
  * Utility to generate JWT and assign it to an HTTP-only response cookie
@@ -441,4 +445,217 @@ export const changePassword = async (req, res, next) => {
     next(error);
   }
 };
+
+/**
+ * @desc    Request Password Reset OTP
+ * @route   POST /api/auth/forgot-password
+ * @access  Public
+ */
+export const forgotPassword = async (req, res, next) => {
+  const { email } = req.body;
+
+  try {
+    if (!email || typeof email !== 'string') {
+      res.status(400);
+      return next(new Error('Please provide a valid email address'));
+    }
+
+    const sanitizedEmail = email.trim().toLowerCase();
+    const emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+
+    if (!emailRegex.test(sanitizedEmail)) {
+      res.status(400);
+      return next(new Error('Please provide a valid email address'));
+    }
+
+    // Rate Limiting: Max 3 requests per 15 minutes per email
+    const fifteenMinsAgo = new Date(Date.now() - 15 * 60 * 1000);
+    const recentRequestsCount = await Otp.countDocuments({
+      email: sanitizedEmail,
+      createdAt: { $gte: fifteenMinsAgo },
+    });
+
+    if (recentRequestsCount >= 3) {
+      res.status(429);
+      return next(new Error('Too many OTP requests. Please wait 15 minutes before requesting a new OTP.'));
+    }
+
+    // Check if account exists in User or Admin model
+    const userExists = await User.findOne({ email: sanitizedEmail });
+    const adminExists = await Admin.findOne({ email: sanitizedEmail });
+
+    // Privacy & Security: Generic response regardless of account existence
+    if (userExists || adminExists) {
+      // Invalidate all previous OTPs immediately for this email
+      await Otp.deleteMany({ email: sanitizedEmail });
+
+      // Generate secure 6-digit numeric OTP
+      const rawOtp = String(crypto.randomInt(100000, 1000000));
+      const hashedOtp = await bcrypt.hash(rawOtp, 10);
+      const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes expiry
+
+      // Save new OTP record
+      await Otp.create({
+        email: sanitizedEmail,
+        otpHash: hashedOtp,
+        expiresAt,
+      });
+
+      // Send branded OTP email
+      await sendOtpEmail({ toEmail: sanitizedEmail, otp: rawOtp });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'If this email is registered, an OTP has been sent.',
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * @desc    Verify Password Reset OTP
+ * @route   POST /api/auth/verify-otp
+ * @access  Public
+ */
+export const verifyOtp = async (req, res, next) => {
+  const { email, otp } = req.body;
+
+  try {
+    if (!email || !otp) {
+      res.status(400);
+      return next(new Error('Please provide email and 6-digit OTP'));
+    }
+
+    const sanitizedEmail = email.trim().toLowerCase();
+    const sanitizedOtp = String(otp).trim();
+
+    if (!/^\d{6}$/.test(sanitizedOtp)) {
+      res.status(400);
+      return next(new Error('OTP must be exactly 6 numeric digits'));
+    }
+
+    // Fetch latest active OTP for this email
+    const otpRecord = await Otp.findOne({ email: sanitizedEmail }).sort({ createdAt: -1 });
+
+    if (!otpRecord) {
+      res.status(400);
+      return next(new Error('Invalid OTP. Please request a new one.'));
+    }
+
+    // Attempt Limit Guard (Max 5 attempts)
+    if (otpRecord.attempts >= 5) {
+      await Otp.deleteMany({ email: sanitizedEmail });
+      res.status(400);
+      return next(new Error('Maximum OTP verification attempts exceeded. Please request a new OTP.'));
+    }
+
+    // Expiry Guard (10 Minutes)
+    if (new Date() > new Date(otpRecord.expiresAt)) {
+      res.status(400);
+      return next(new Error('OTP has expired. Please request a new one.'));
+    }
+
+    // Verify OTP match via bcrypt
+    const isMatch = await bcrypt.compare(sanitizedOtp, otpRecord.otpHash);
+
+    if (!isMatch) {
+      otpRecord.attempts += 1;
+      await otpRecord.save();
+      res.status(400);
+      return next(new Error('Invalid OTP.'));
+    }
+
+    // Generate short-lived reset token (valid 15 minutes)
+    const resetToken = crypto.randomBytes(32).toString('hex');
+    otpRecord.verified = true;
+    otpRecord.resetToken = resetToken;
+    otpRecord.resetTokenExpiresAt = new Date(Date.now() + 15 * 60 * 1000);
+    await otpRecord.save();
+
+    res.status(200).json({
+      success: true,
+      message: 'OTP verified successfully.',
+      resetToken,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * @desc    Reset Password with Verified Reset Token
+ * @route   POST /api/auth/reset-password
+ * @access  Public
+ */
+export const resetPassword = async (req, res, next) => {
+  const { email, resetToken, newPassword, confirmPassword } = req.body;
+
+  try {
+    if (!email || !resetToken || !newPassword || !confirmPassword) {
+      res.status(400);
+      return next(new Error('Please fill in all required fields'));
+    }
+
+    const sanitizedEmail = email.trim().toLowerCase();
+
+    if (newPassword.length < 8) {
+      res.status(400);
+      return next(new Error('Password must be at least 8 characters long'));
+    }
+
+    if (newPassword !== confirmPassword) {
+      res.status(400);
+      return next(new Error('Passwords do not match'));
+    }
+
+    // Find verified OTP session matching resetToken
+    const otpRecord = await Otp.findOne({
+      email: sanitizedEmail,
+      resetToken,
+      verified: true,
+    });
+
+    if (!otpRecord || !otpRecord.resetTokenExpiresAt || new Date() > new Date(otpRecord.resetTokenExpiresAt)) {
+      res.status(400);
+      return next(new Error('Invalid or expired password reset session. Please request a new OTP.'));
+    }
+
+    // Locate target account in User or Admin collection
+    let targetUser = await User.findOne({ email: sanitizedEmail });
+    let targetAdmin = null;
+
+    if (!targetUser) {
+      targetAdmin = await Admin.findOne({ email: sanitizedEmail });
+    }
+
+    const targetAccount = targetUser || targetAdmin;
+
+    if (targetAccount) {
+      // Update password (Mongoose pre-save hook will hash it via bcrypt)
+      targetAccount.password = newPassword;
+      await targetAccount.save();
+    }
+
+    // Immediately clear all OTP and reset session records for this email
+    await Otp.deleteMany({ email: sanitizedEmail });
+
+    // Invalidate active login session cookies
+    res.cookie('token', '', {
+      httpOnly: true,
+      expires: new Date(0),
+      sameSite: 'lax',
+      secure: process.env.NODE_ENV === 'production',
+    });
+
+    res.status(200).json({
+      success: true,
+      message: 'Password changed successfully',
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 

@@ -122,7 +122,7 @@ export const MobileDrawer = ({
         {/* Drawer Navigation Links */}
         <nav className="flex-1 overflow-y-auto px-4 py-6" aria-label="Mobile menu links">
           <ul className="space-y-2">
-            {links.map((link) => {
+            {links.filter((link) => link.showInMobileMenu !== false).map((link) => {
               const hasChildren = link.children && link.children.length > 0;
               const isExpanded = !!expandedMenus[link.label];
               const isActive = link.href === '/' ? pathname === '/' : pathname.startsWith(link.href);

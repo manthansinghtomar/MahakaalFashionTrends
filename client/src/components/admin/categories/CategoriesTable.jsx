@@ -5,6 +5,7 @@ import EmptyState from '@/components/ui/EmptyState.jsx';
 /**
  * Categories Table rendering list of registered collections.
  * Handles empty list state using the standard EmptyState UI component.
+ * Card-contained horizontal scroll for mobile viewports.
  */
 export const CategoriesTable = ({
   categories = [],
@@ -37,9 +38,9 @@ export const CategoriesTable = ({
   const showProductCount = categories.some((cat) => cat.productCount !== undefined);
 
   return (
-    <div className="bg-white border border-neutral-100 rounded-2xl overflow-hidden shadow-xs">
-      <div className="overflow-x-auto">
-        <table className="w-full text-left text-xs border-collapse">
+    <div className="bg-white border border-neutral-100 rounded-2xl overflow-hidden shadow-xs w-full min-w-0">
+      <div className="overflow-x-auto w-full max-w-full scrollbar-thin">
+        <table className="w-full min-w-[700px] text-left text-xs border-collapse">
           <thead>
             <tr className="bg-neutral-50 border-b border-neutral-100 text-neutral-400 font-bold uppercase tracking-wider">
               <th className="p-4 pl-6">Category details</th>
@@ -73,7 +74,7 @@ export const CategoriesTable = ({
                     ) : (
                       <div className="w-10 h-10 rounded-lg bg-neutral-50 border border-neutral-200/40 flex items-center justify-center flex-shrink-0 text-neutral-300">
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M3 7v10a2 2 0 002-2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
                         </svg>
                       </div>
                     )}

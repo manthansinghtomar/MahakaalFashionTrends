@@ -29,6 +29,18 @@ export const authService = {
   changePassword: async (passwordData) => {
     return api.put(API_ENDPOINTS.AUTH.CHANGE_PASSWORD, passwordData);
   },
+
+  forgotPassword: async (email) => {
+    return api.post(API_ENDPOINTS.AUTH.FORGOT_PASSWORD, { email });
+  },
+
+  verifyOtp: async (email, otp) => {
+    return api.post(API_ENDPOINTS.AUTH.VERIFY_OTP, { email, otp });
+  },
+
+  resetPassword: async (data) => {
+    return api.post(API_ENDPOINTS.AUTH.RESET_PASSWORD, data);
+  },
 };
 
 export default authService;

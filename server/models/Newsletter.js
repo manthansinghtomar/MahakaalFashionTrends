@@ -23,8 +23,7 @@ const newsletterSchema = new mongoose.Schema(
   }
 );
 
-// Index for email search and fast sorting
-newsletterSchema.index({ email: 1 });
+// Index for fast sorting
 newsletterSchema.index({ subscribedAt: -1 });
 
 const Newsletter = mongoose.model('Newsletter', newsletterSchema);

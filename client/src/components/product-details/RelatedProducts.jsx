@@ -77,7 +77,7 @@ export const RelatedProducts = ({ categoryId, currentProductId }) => {
         </div>
 
         {/* Product Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-0 gap-y-3 sm:gap-6 lg:gap-8">
           {related.map((prod) => (
             <ProductCard key={prod._id || prod.id} product={prod} />
           ))}

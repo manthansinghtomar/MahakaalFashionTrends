@@ -79,7 +79,7 @@ export const NAV_LINKS = [
     roles: null,
     showInNavbar: false,
     showInFooter: false,
-    showInMobileMenu: true,
+    showInMobileMenu: false,
     isComingSoon: false,
   },
   {
@@ -90,7 +90,7 @@ export const NAV_LINKS = [
     roles: null,
     showInNavbar: false,
     showInFooter: false,
-    showInMobileMenu: true,
+    showInMobileMenu: false,
     isComingSoon: true, // Mark as future placeholder
   },
   {
@@ -100,8 +100,8 @@ export const NAV_LINKS = [
     requiresAuth: true,
     roles: null,
     showInNavbar: false,
-    showInFooter: true,
-    showInMobileMenu: true,
+    showInFooter: false,
+    showInMobileMenu: false,
     isComingSoon: false,
   },
 ];

@@ -155,16 +155,13 @@ export const LoginForm = () => {
             <label htmlFor="login-password" className="text-xs font-bold uppercase tracking-wider text-neutral-500">
               Password
             </label>
-            {/* Forgot Password Link */}
-            {!isAdminMode && (
-              <Link 
-                href="#" 
-                onClick={(e) => e.preventDefault()}
-                className="text-xs font-bold text-secondary hover:text-neutral-900 transition-colors"
-              >
-                Forgot password?
-              </Link>
-            )}
+            {/* Forgot Password Link (Customer & Admin) */}
+            <Link 
+              href="/forgot-password" 
+              className="text-xs font-bold text-secondary hover:text-neutral-900 transition-colors"
+            >
+              Forgot password?
+            </Link>
           </div>
           
           <div className="relative">

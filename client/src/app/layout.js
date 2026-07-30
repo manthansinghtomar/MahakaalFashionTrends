@@ -8,6 +8,17 @@ const jakarta = Plus_Jakarta_Sans({
   variable: "--font-sans",
 });
 
+/**
+ * Configure viewport to prevent accidental full-page zoom/distortion on mobile browsers.
+ * Keeps website layout stable, crisp, and app-like on mobile devices.
+ */
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+};
+
 export const metadata = {
   title: {
     default: "Mahakaal Fashion Trends",
@@ -39,4 +50,3 @@ export default function RootLayout({ children }) {
     </html>
   );
 }
-

@@ -5,6 +5,7 @@ import EmptyState from '@/components/ui/EmptyState.jsx';
 /**
  * Offers Table listing registered discounts and marketing campaigns.
  * Utilizes standard date formatting helpers consistently.
+ * Card-contained horizontal scroll for mobile viewports.
  */
 export const OffersTable = ({
   offers = [],
@@ -35,9 +36,9 @@ export const OffersTable = ({
   }
 
   return (
-    <div className="bg-white border border-neutral-100 rounded-2xl overflow-hidden shadow-xs">
-      <div className="overflow-x-auto">
-        <table className="w-full text-left text-xs border-collapse">
+    <div className="bg-white border border-neutral-100 rounded-2xl overflow-hidden shadow-xs w-full min-w-0">
+      <div className="overflow-x-auto w-full max-w-full scrollbar-thin">
+        <table className="w-full min-w-[700px] text-left text-xs border-collapse">
           <thead>
             <tr className="bg-neutral-50 border-b border-neutral-100 text-neutral-400 font-bold uppercase tracking-wider">
               <th className="p-4 pl-6">Campaign details</th>

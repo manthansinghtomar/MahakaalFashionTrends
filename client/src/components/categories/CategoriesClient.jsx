@@ -60,7 +60,7 @@ export const CategoriesClient = () => {
       {/* 1. Full-Width Dark Hero Header */}
       <CategoriesPageHeader />
 
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pb-20">
+      <div className="mx-auto max-w-7xl px-1.5 sm:px-6 lg:px-8 pb-20">
         {/* 2. State coordination */}
       {loading ? (
         <div className="flex flex-col items-center justify-center py-24 min-h-[300px]">

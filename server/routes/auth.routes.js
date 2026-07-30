@@ -7,6 +7,9 @@ import {
   logoutUser,
   updateProfile,
   changePassword,
+  forgotPassword,
+  verifyOtp,
+  resetPassword,
 } from '../controllers/auth.controller.js';
 import { protect } from '../middleware/authMiddleware.js';
 
@@ -17,6 +20,11 @@ router.post('/register', registerUser);
 router.post('/login', loginUser);
 router.post('/admin/login', loginAdmin);
 router.post('/logout', logoutUser);
+
+// Password recovery routes (Public)
+router.post('/forgot-password', forgotPassword);
+router.post('/verify-otp', verifyOtp);
+router.post('/reset-password', resetPassword);
 
 // Protected auth routes
 router.get('/me', protect, getCurrentUser);

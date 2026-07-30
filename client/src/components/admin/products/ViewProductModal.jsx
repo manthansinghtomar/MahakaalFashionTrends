@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
+import { formatRupees } from '@/utils/currency.js';
 
 /**
  * Dedicated Admin Product Details Preview Modal.
@@ -21,13 +22,6 @@ export const ViewProductModal = ({
     : [{ url: 'https://placehold.co/400x500?text=No+Image' }];
 
   const currentImage = images[selectedImageIndex]?.url || images[0]?.url;
-
-  const formatRupees = (val) => {
-    if (val === undefined || val === null || val === '') return '0';
-    return new Intl.NumberFormat('en-IN', {
-      maximumFractionDigits: 0,
-    }).format(val);
-  };
 
   const hasDiscount = product.originalPrice && product.originalPrice > product.price;
 

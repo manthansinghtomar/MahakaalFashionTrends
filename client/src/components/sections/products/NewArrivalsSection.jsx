@@ -67,7 +67,7 @@ export const NewArrivalsSection = ({ products: initialProducts = null }) => {
 
   return (
     <section className="w-full bg-white py-20 border-b border-neutral-100">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl px-1.5 sm:px-6 lg:px-8">
         
         {/* Split Header Container */}
         <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-16">

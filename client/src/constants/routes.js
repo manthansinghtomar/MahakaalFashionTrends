@@ -8,6 +8,7 @@ export const ROUTES = {
   ABOUT: '/about',
   LOGIN: '/login',
   REGISTER: '/register',
+  FORGOT_PASSWORD: '/forgot-password',
   PROFILE: '/profile',
   WISHLIST: '/wishlist',
   CART: '/cart',
@@ -40,6 +41,7 @@ export const PUBLIC_ROUTES = [
 export const AUTH_ROUTES = [
   ROUTES.LOGIN,
   ROUTES.REGISTER,
+  ROUTES.FORGOT_PASSWORD,
 ];
 
 export const PROTECTED_ROUTES = [
@@ -71,6 +73,9 @@ export const API_ENDPOINTS = {
     ME: '/auth/me',
     UPDATE_PROFILE: '/auth/profile',
     CHANGE_PASSWORD: '/auth/change-password',
+    FORGOT_PASSWORD: '/auth/forgot-password',
+    VERIFY_OTP: '/auth/verify-otp',
+    RESET_PASSWORD: '/auth/reset-password',
   },
   PRODUCTS: {
     BASE: '/products',
