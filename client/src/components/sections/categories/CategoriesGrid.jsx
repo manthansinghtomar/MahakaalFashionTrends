@@ -1,10 +1,13 @@
+"use client";
+
 import React from 'react';
+import Link from 'next/link';
 import CategoryCard from './CategoryCard.jsx';
 
 /**
  * Categories Grid component.
- * Mobile (< 640px): 2-column zero-gap mobile layout where cards touch side-by-side.
- * Desktop: Preserved 4-column grid.
+ * Mobile (< 640px): 2-column layout. Shows 6 categories max by default, with a "See More ->" button redirecting to /categories page.
+ * Desktop: Preserved 4-column grid displaying all categories.
  */
 export const CategoriesGrid = ({ categories = [] }) => {
   if (!categories || categories.length === 0) {
@@ -20,11 +23,42 @@ export const CategoriesGrid = ({ categories = [] }) => {
     (a, b) => (a.displayOrder || 0) - (b.displayOrder || 0)
   );
 
+  const hasMoreThanSix = sortedCategories.length > 6;
+
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-0 gap-y-3 sm:gap-6 lg:gap-8">
-      {sortedCategories.map((category) => (
-        <CategoryCard key={category._id || category.id || category.slug} category={category} />
-      ))}
+    <div>
+      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-0 gap-y-3 sm:gap-6 lg:gap-8">
+        {sortedCategories.map((category, index) => {
+          const isHiddenOnMobile = hasMoreThanSix && index >= 6;
+          return (
+            <div
+              key={category._id || category.id || category.slug}
+              className={isHiddenOnMobile ? 'hidden sm:block' : 'block'}
+            >
+              <CategoryCard category={category} />
+            </div>
+          );
+        })}
+      </div>
+
+      {hasMoreThanSix && (
+        <div className="mt-8 flex justify-center sm:hidden">
+          <Link
+            href="/categories"
+            className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full border border-neutral-300 bg-white text-xs font-bold uppercase tracking-wider text-neutral-900 shadow-sm hover:bg-neutral-950 hover:text-white hover:border-transparent transition-all duration-300 active:scale-95"
+          >
+            <span>See More Categories</span>
+            <svg
+              className="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+            </svg>
+          </Link>
+        </div>
+      )}
     </div>
   );
 };

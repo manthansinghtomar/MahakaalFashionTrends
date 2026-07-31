@@ -62,8 +62,8 @@ Mahakaal Fashion Trends`;
         port: Number(SMTP_PORT) || 587,
         secure: Number(SMTP_PORT) === 465,
         auth: {
-          user: SMTP_USER,
-          pass: SMTP_PASS,
+          user: SMTP_USER.trim(),
+          pass: SMTP_PASS ? SMTP_PASS.replace(/\s+/g, '') : '',
         },
       });
 

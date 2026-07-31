@@ -24,10 +24,10 @@ export const NewArrivalsSection = ({ products: initialProducts = null }) => {
       setLoading(true);
       setError(null);
 
-      // Query only new arrivals, limited to 4 items for grid layout
+      // Query only new arrivals, limited to 8 items
       const response = await productService.getAllProducts({
         newArrival: 'true',
-        limit: 4,
+        limit: 8,
         ...(signal ? { signal } : {}),
       });
 

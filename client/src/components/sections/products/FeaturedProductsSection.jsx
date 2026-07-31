@@ -23,10 +23,10 @@ export const FeaturedProductsSection = () => {
       setLoading(true);
       setError(null);
 
-      // Query only featured products, limited to 4 items for grid layout
+      // Query only featured products, limited to 8 items
       const response = await productService.getAllProducts({
         featured: 'true',
-        limit: 4,
+        limit: 8,
         ...(signal ? { signal } : {}),
       });
 

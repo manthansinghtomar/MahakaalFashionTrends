@@ -142,7 +142,7 @@ export const LoginForm = () => {
               setEmail(e.target.value);
               if (error) setError(null);
             }}
-            placeholder={isAdminMode ? 'admin@mahakaal.com' : 'Enter your email address'}
+            placeholder="Enter your email address"
             disabled={submitting}
             required
             className="w-full bg-neutral-50/50 border border-neutral-200 rounded-xl px-4 py-3 text-sm outline-none placeholder:text-neutral-400 focus:border-secondary focus:bg-white transition-all duration-300 disabled:opacity-50"
@@ -227,13 +227,13 @@ export const LoginForm = () => {
             disabled={submitting}
             className="w-full rounded-xl bg-secondary text-neutral-950 hover:bg-neutral-900 hover:text-white font-bold uppercase tracking-wider text-xs py-3.5"
           >
-            {isAdminMode ? 'Console Sign In' : 'Sign In'}
+            Sign In
           </Button>
         </div>
       </form>
 
       {/* 3. Link to Register page */}
-      {!isAdminMode ? (
+      {!isAdminMode && (
         <div className="text-center text-xs text-neutral-500">
           Don&apos;t have a customer account?{' '}
           <Link 
@@ -242,10 +242,6 @@ export const LoginForm = () => {
           >
             Sign Up
           </Link>
-        </div>
-      ) : (
-        <div className="text-center text-[10px] font-bold text-amber-600 bg-amber-50 border border-amber-105 rounded-xl p-3 leading-relaxed">
-          ⚠️ Administrators cannot register from the public portal. Setup must be initiated by backend database seeding scripts.
         </div>
       )}
 
