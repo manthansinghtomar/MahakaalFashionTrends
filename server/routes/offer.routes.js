@@ -3,7 +3,9 @@ import {
   createOffer,
   updateOffer,
   deleteOffer,
+  permanentDeleteOffer,
   restoreOffer,
+  getDeletedOffers,
   getAllOffers,
   getOfferById,
 } from '../controllers/offer.controller.js';
@@ -42,6 +44,9 @@ const optionalProtect = async (req, res, next) => {
   next();
 };
 
+// Admin deleted items list route (must be before /:id)
+router.get('/deleted/list', protect, authorizeRoles('admin', 'superadmin'), getDeletedOffers);
+
 // Public catalog routes
 router.get('/', optionalProtect, getAllOffers);
 router.get('/:id', optionalProtect, getOfferById);
@@ -49,6 +54,7 @@ router.get('/:id', optionalProtect, getOfferById);
 // Private Admin-only mutating routes
 router.post('/', protect, authorizeRoles('admin', 'superadmin'), createOffer);
 router.put('/:id', protect, authorizeRoles('admin', 'superadmin'), updateOffer);
+router.delete('/:id/permanent', protect, authorizeRoles('admin', 'superadmin'), permanentDeleteOffer);
 router.delete('/:id', protect, authorizeRoles('admin', 'superadmin'), deleteOffer);
 router.patch('/:id/restore', protect, authorizeRoles('admin', 'superadmin'), restoreOffer);
 

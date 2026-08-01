@@ -166,6 +166,36 @@ export const deleteOffer = async (req, res, next) => {
       return next(new Error('Offer not found'));
     }
 
+    offer.isActive = false;
+    offer.isDeleted = true;
+    offer.deletedAt = new Date();
+    await offer.save();
+
+    res.status(200).json({
+      success: true,
+      message: 'Offer deleted successfully',
+      offer,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * @desc    Permanent Delete Offer (Admin only)
+ * @route   DELETE /api/offers/:id/permanent
+ * @access  Private (Admin/Superadmin)
+ */
+export const permanentDeleteOffer = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    const offer = await Offer.findById(id);
+    if (!offer) {
+      res.status(404);
+      return next(new Error('Offer not found'));
+    }
+
     // Banner image cleanup on delete
     if (offer.bannerImage && offer.bannerImage.public_id && !offer.bannerImage.public_id.startsWith('local_')) {
       try {
@@ -180,7 +210,7 @@ export const deleteOffer = async (req, res, next) => {
 
     res.status(200).json({
       success: true,
-      message: 'Offer deleted successfully',
+      message: 'Offer permanently deleted',
     });
   } catch (error) {
     next(error);
@@ -203,12 +233,41 @@ export const restoreOffer = async (req, res, next) => {
     }
 
     offer.isActive = true;
+    offer.isDeleted = false;
+    offer.deletedAt = null;
     await offer.save();
 
     res.status(200).json({
       success: true,
       message: 'Offer restored successfully',
       offer,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * @desc    Get soft-deleted offers list (Admin only)
+ * @route   GET /api/offers/deleted/list
+ * @access  Private (Admin/Superadmin)
+ */
+export const getDeletedOffers = async (req, res, next) => {
+  try {
+    const rawOffers = await Offer.find({ isDeleted: true })
+      .populate('product', 'name slug price originalPrice images discountPercentage category')
+      .sort({ deletedAt: -1, updatedAt: -1 });
+
+    const offers = rawOffers.map((off) => {
+      const obj = off.toObject();
+      obj.status = computeOfferStatus(obj.startDate, obj.endDate);
+      return obj;
+    });
+
+    res.status(200).json({
+      success: true,
+      count: offers.length,
+      offers,
     });
   } catch (error) {
     next(error);
@@ -224,16 +283,16 @@ export const getAllOffers = async (req, res, next) => {
   try {
     const { page = 1, limit = 10, sort, includeInactive } = req.query;
 
-    const query = { isActive: true };
+    const query = { isDeleted: { $ne: true } };
 
     // 1. Admin optional protect check
     const isAdmin = req.user && (req.user.role === 'admin' || req.user.role === 'superadmin');
     if (isAdmin && includeInactive === 'true') {
       // Admin sees all non-deleted active documents
-      query.isActive = true;
+      delete query.isActive;
     } else {
-      const currentDate = new Date();
       query.isActive = true;
+      const currentDate = new Date();
       query.startDate = { $lte: currentDate };
       query.endDate = { $gte: currentDate };
     }

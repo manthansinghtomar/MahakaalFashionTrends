@@ -23,7 +23,15 @@ export const categoryService = {
   },
 
   restoreCategory: async (id) => {
-    return api.patch(API_ENDPOINTS.CATEGORIES.RESTORE(id));
+    return api.patch(`${API_ENDPOINTS.CATEGORIES.BASE}/${id}/restore`);
+  },
+
+  getDeletedCategories: async () => {
+    return api.get(`${API_ENDPOINTS.CATEGORIES.BASE}/deleted/list`);
+  },
+
+  permanentDeleteCategory: async (id) => {
+    return api.delete(`${API_ENDPOINTS.CATEGORIES.BASE}/${id}/permanent`);
   },
 };
 

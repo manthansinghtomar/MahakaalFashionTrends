@@ -170,15 +170,46 @@ export const deleteCategory = async (req, res, next) => {
       return next(new Error('Category not found'));
     }
 
-    // 1. Dependency check: check if any active products are assigned to this category
-    const activeProductsExist = await Product.findOne({ category: id, isActive: true });
+    // Dependency check: check if any active products are assigned to this category
+    const activeProductsExist = await Product.findOne({ category: id, isActive: true, isDeleted: { $ne: true } });
     if (activeProductsExist) {
       res.status(400);
-      return next(new Error('This category cannot be deleted because it is assigned to existing products.'));
+      return next(new Error('This category cannot be deleted because it is assigned to existing active products.'));
     }
 
-    // 2. Destroy image on Cloudinary if present
-    if (category.image && category.image.public_id) {
+    category.isActive = false;
+    category.status = 'inactive';
+    category.isDeleted = true;
+    category.deletedAt = new Date();
+    await category.save();
+
+    res.status(200).json({
+      success: true,
+      message: 'Category deleted successfully',
+      category,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * @desc    Permanent Delete Category (Admin only)
+ * @route   DELETE /api/categories/:id/permanent
+ * @access  Private (Admin/Superadmin)
+ */
+export const permanentDeleteCategory = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    const category = await Category.findById(id);
+    if (!category) {
+      res.status(404);
+      return next(new Error('Category not found'));
+    }
+
+    // Destroy image on Cloudinary if present
+    if (category.image && category.image.public_id && !category.image.public_id.startsWith('local_')) {
       try {
         await cloudinary.uploader.destroy(category.image.public_id);
       } catch (err) {
@@ -186,12 +217,11 @@ export const deleteCategory = async (req, res, next) => {
       }
     }
 
-    // 3. Remove category from database
     await Category.findByIdAndDelete(id);
 
     res.status(200).json({
       success: true,
-      message: 'Category deleted successfully',
+      message: 'Category permanently deleted',
     });
   } catch (error) {
     next(error);
@@ -215,12 +245,35 @@ export const restoreCategory = async (req, res, next) => {
 
     category.isActive = true;
     category.status = 'active';
+    category.isDeleted = false;
+    category.deletedAt = null;
     await category.save();
 
     res.status(200).json({
       success: true,
       message: 'Category restored successfully',
       category,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * @desc    Get soft-deleted categories list (Admin only)
+ * @route   GET /api/categories/deleted/list
+ * @access  Private (Admin/Superadmin)
+ */
+export const getDeletedCategories = async (req, res, next) => {
+  try {
+    const categories = await Category.find({ isDeleted: true })
+      .populate('parent', 'name slug')
+      .sort({ deletedAt: -1, updatedAt: -1 });
+
+    res.status(200).json({
+      success: true,
+      count: categories.length,
+      categories,
     });
   } catch (error) {
     next(error);
@@ -236,12 +289,13 @@ export const getAllCategories = async (req, res, next) => {
   try {
     const { page = 1, limit = 10, includeInactive } = req.query;
 
-    const query = {};
+    const query = { isDeleted: { $ne: true } };
 
     // 1. Admin optional protect check: default view only shows active categories
     const isAdmin = req.user && (req.user.role === 'admin' || req.user.role === 'superadmin');
     if (isAdmin && includeInactive === 'true') {
       // Allow admin to view inactive categories
+      delete query.isActive;
     } else {
       query.isActive = true;
     }

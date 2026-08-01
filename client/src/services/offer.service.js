@@ -23,7 +23,15 @@ export const offerService = {
   },
 
   restoreOffer: async (id) => {
-    return api.patch(API_ENDPOINTS.OFFERS.RESTORE(id));
+    return api.patch(`${API_ENDPOINTS.OFFERS.BASE}/${id}/restore`);
+  },
+
+  getDeletedOffers: async () => {
+    return api.get(`${API_ENDPOINTS.OFFERS.BASE}/deleted/list`);
+  },
+
+  permanentDeleteOffer: async (id) => {
+    return api.delete(`${API_ENDPOINTS.OFFERS.BASE}/${id}/permanent`);
   },
 };
 

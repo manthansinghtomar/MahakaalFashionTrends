@@ -3,7 +3,9 @@ import {
   createCategory,
   updateCategory,
   deleteCategory,
+  permanentDeleteCategory,
   restoreCategory,
+  getDeletedCategories,
   getAllCategories,
   getCategoryBySlug,
 } from '../controllers/category.controller.js';
@@ -42,6 +44,9 @@ const optionalProtect = async (req, res, next) => {
   next();
 };
 
+// Admin deleted items list route (must be before /:slug)
+router.get('/deleted/list', protect, authorizeRoles('admin', 'superadmin'), getDeletedCategories);
+
 // Public catalog routes
 router.get('/', optionalProtect, getAllCategories);
 router.get('/:slug', getCategoryBySlug);
@@ -49,6 +54,7 @@ router.get('/:slug', getCategoryBySlug);
 // Private Admin-only mutating routes
 router.post('/', protect, authorizeRoles('admin', 'superadmin'), createCategory);
 router.put('/:id', protect, authorizeRoles('admin', 'superadmin'), updateCategory);
+router.delete('/:id/permanent', protect, authorizeRoles('admin', 'superadmin'), permanentDeleteCategory);
 router.delete('/:id', protect, authorizeRoles('admin', 'superadmin'), deleteCategory);
 router.patch('/:id/restore', protect, authorizeRoles('admin', 'superadmin'), restoreCategory);
 
