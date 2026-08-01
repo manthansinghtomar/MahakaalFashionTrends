@@ -1,4 +1,5 @@
 import Offer from '../models/Offer.js';
+import Product from '../models/Product.js';
 import cloudinary from '../config/cloudinary.js';
 
 /**
@@ -21,12 +22,23 @@ const computeOfferStatus = (startDate, endDate) => {
  */
 export const createOffer = async (req, res, next) => {
   try {
-    const { title, description, bannerImage, discountPercentage, startDate, endDate } = req.body;
+    const { title, description, product, bannerImage, discountPercentage, startDate, endDate } = req.body;
 
     // 1. Validation
     if (!title || !description || !bannerImage || discountPercentage === undefined || !startDate || !endDate) {
       res.status(400);
       return next(new Error('Please provide title, description, bannerImage, discountPercentage, startDate, and endDate'));
+    }
+
+    if (!product) {
+      res.status(400);
+      return next(new Error('Please select a product.'));
+    }
+
+    const existingProduct = await Product.findOne({ _id: product, isDeleted: false });
+    if (!existingProduct) {
+      res.status(400);
+      return next(new Error('Ye product Products me nahi hai. Pehle isko Products me add karo, phir Offer create karo.'));
     }
 
     if (!bannerImage.public_id || !bannerImage.url) {
@@ -52,6 +64,7 @@ export const createOffer = async (req, res, next) => {
     const newOffer = await Offer.create({
       title,
       description,
+      product,
       bannerImage,
       discountPercentage: discountNum,
       startDate: start,
@@ -81,6 +94,19 @@ export const updateOffer = async (req, res, next) => {
     if (!offer) {
       res.status(404);
       return next(new Error('Offer not found'));
+    }
+
+    // Validate product if updated
+    if (updateData.product !== undefined) {
+      if (!updateData.product) {
+        res.status(400);
+        return next(new Error('Please select a product.'));
+      }
+      const existingProduct = await Product.findOne({ _id: updateData.product, isDeleted: false });
+      if (!existingProduct) {
+        res.status(400);
+        return next(new Error('Ye product Products me nahi hai. Pehle isko Products me add karo, phir Offer create karo.'));
+      }
     }
 
     // Validate range if updated
@@ -228,6 +254,7 @@ export const getAllOffers = async (req, res, next) => {
     // 4. Database execution
     const totalOffers = await Offer.countDocuments(query);
     const rawOffers = await Offer.find(query)
+      .populate('product', 'name slug price originalPrice images discountPercentage category')
       .sort(sortQuery)
       .skip(skip)
       .limit(limitNum);
@@ -262,7 +289,7 @@ export const getOfferById = async (req, res, next) => {
   try {
     const { id } = req.params;
 
-    const offer = await Offer.findById(id);
+    const offer = await Offer.findById(id).populate('product', 'name slug price originalPrice images discountPercentage category');
     if (!offer) {
       res.status(404);
       return next(new Error('Offer not found'));

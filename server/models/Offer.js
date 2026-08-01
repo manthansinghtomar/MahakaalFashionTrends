@@ -11,6 +11,11 @@ const offerSchema = new mongoose.Schema(
       type: String,
       required: [true, 'Offer description is required'],
     },
+    product: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Product',
+      required: [true, 'Product reference is required for an offer'],
+    },
     bannerImage: {
       public_id: {
         type: String,

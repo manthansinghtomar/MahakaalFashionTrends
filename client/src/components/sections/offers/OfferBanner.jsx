@@ -144,15 +144,19 @@ export const OfferBanner = ({ offer }) => {
             )}
           </div>
 
-          {/* Shop Now Action Button */}
+          {/* View Details Action Button */}
           <div className="pt-2">
-            <Link href="/products" passHref className="focus:outline-none">
+            <Link
+              href={offer.product && typeof offer.product === 'object' && offer.product.slug ? `/products/${offer.product.slug}` : '/products'}
+              passHref
+              className="focus:outline-none"
+            >
               <Button
                 variant="outline"
                 className="rounded-full px-8 py-3 text-xs font-bold uppercase tracking-[0.2em] border-white text-white hover:bg-white hover:text-neutral-950 hover:border-transparent transition-all duration-300 focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-neutral-950"
-                aria-label={`Shop products under the ${title} promotion`}
+                aria-label={`View details for ${title} promotion`}
               >
-                Shop Now
+                View Details
               </Button>
             </Link>
           </div>

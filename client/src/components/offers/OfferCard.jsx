@@ -115,14 +115,18 @@ export const OfferCard = ({ offer }) => {
 
         {/* CTA Explore Button */}
         <div className="pt-2">
-          <Link href="/products" passHref className="focus:outline-none">
+          <Link
+            href={offer.product && typeof offer.product === 'object' && offer.product.slug ? `/products/${offer.product.slug}` : '/products'}
+            passHref
+            className="focus:outline-none"
+          >
             <Button
               variant="outline"
               size="sm"
               disabled={isExpired}
               className="w-full rounded-md uppercase tracking-wider text-xs font-semibold py-2.5 transition-all duration-300 group-hover:bg-neutral-950 group-hover:text-white group-hover:border-transparent disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-neutral-400 disabled:hover:border-neutral-200"
             >
-              {isExpired ? 'Offer Ended' : 'Shop Now'}
+              {isExpired ? 'Offer Ended' : 'View Details'}
             </Button>
           </Link>
         </div>

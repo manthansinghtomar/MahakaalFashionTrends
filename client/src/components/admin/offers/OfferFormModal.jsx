@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import uploadService from '@/services/upload.service.js';
+import productService from '@/services/product.service.js';
 import toast from '@/utils/toast.js';
 
 /**
@@ -26,11 +27,14 @@ export const OfferFormModal = ({
   const [formData, setFormData] = useState({
     title: '',
     description: '',
+    productId: '',
     discountPercentage: '',
     startDate: '',
     endDate: '',
   });
 
+  const [products, setProducts] = useState([]);
+  const [loadingProducts, setLoadingProducts] = useState(false);
   const [image, setImage] = useState(null); // Single banner image object: { public_id, url }
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState(null);
@@ -43,10 +47,29 @@ export const OfferFormModal = ({
 
   // Sync state values when modal opens or shifts modes
   useEffect(() => {
+    const fetchProductsList = async () => {
+      try {
+        setLoadingProducts(true);
+        const res = await productService.getAllProducts({ limit: 100 });
+        if (res && res.products) {
+          setProducts(res.products);
+        }
+      } catch (err) {
+        console.error('Failed to load products list for offer selection:', err);
+      } finally {
+        setLoadingProducts(false);
+      }
+    };
+
+    if (isOpen) {
+      fetchProductsList();
+    }
+
     if (offer) {
       setFormData({
         title: offer.title || '',
         description: offer.description || '',
+        productId: offer.product?._id || offer.product || '',
         discountPercentage: offer.discountPercentage ?? '',
         startDate: formatInputDate(offer.startDate),
         endDate: formatInputDate(offer.endDate),
@@ -62,6 +85,7 @@ export const OfferFormModal = ({
       setFormData({
         title: '',
         description: '',
+        productId: '',
         discountPercentage: '',
         startDate: todayStr,
         endDate: nextWeekStr,
@@ -134,6 +158,21 @@ export const OfferFormModal = ({
     e.preventDefault();
     setError(null);
 
+    // 1. Validate product selection
+    if (!formData.productId) {
+      setError('Please select a product.');
+      return;
+    }
+
+    // 2. Validate product existence in active products list
+    if (products.length > 0) {
+      const selectedProd = products.find((p) => String(p._id || p.id) === String(formData.productId));
+      if (!selectedProd) {
+        setError('Ye product Products me nahi hai. Pehle isko Products me add karo, phir Offer create karo.');
+        return;
+      }
+    }
+
     // Validate empty required fields
     if (!formData.title.trim() || !formData.description.trim() || formData.discountPercentage === '' || !formData.startDate || !formData.endDate) {
       setError('Please fill in all required fields.');
@@ -149,13 +188,13 @@ export const OfferFormModal = ({
     const startVal = new Date(formData.startDate);
     const endVal = new Date(formData.endDate);
 
-    // 1. Validate discount range (1 to 100)
+    // 3. Validate discount range (1 to 100)
     if (isNaN(discountNum) || discountNum < 1 || discountNum > 100) {
       setError('Discount percentage must be between 1 and 100.');
       return;
     }
 
-    // 2. Validate date chronological logic
+    // 4. Validate date chronological logic
     if (endVal < startVal) {
       setError('End Date must be on or after Start Date.');
       return;
@@ -164,6 +203,7 @@ export const OfferFormModal = ({
     const offerPayload = {
       title: formData.title.trim(),
       description: formData.description.trim(),
+      product: formData.productId,
       discountPercentage: discountNum,
       startDate: startVal.toISOString(),
       endDate: endVal.toISOString(),
@@ -226,6 +266,28 @@ export const OfferFormModal = ({
               className="w-full px-4 py-2.5 rounded-xl border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all font-semibold text-neutral-900"
               required
             />
+          </div>
+
+          {/* Field: Select Target Product */}
+          <div>
+            <label className="block text-xs font-bold text-neutral-600 mb-1.5">Target Product *</label>
+            <select
+              name="productId"
+              value={formData.productId}
+              onChange={handleInputChange}
+              className="w-full px-4 py-2.5 rounded-xl border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all font-semibold text-neutral-900 bg-white"
+              required
+            >
+              <option value="">-- Select Product for Offer --</option>
+              {products.map((prod) => (
+                <option key={prod._id || prod.id} value={prod._id || prod.id}>
+                  {prod.name} {prod.price ? `(₹${prod.price})` : ''}
+                </option>
+              ))}
+            </select>
+            {loadingProducts && (
+              <p className="text-[11px] text-amber-600 font-medium mt-1">Loading products catalogue...</p>
+            )}
           </div>
 
           {/* Field 2: Discount Percentage */}
