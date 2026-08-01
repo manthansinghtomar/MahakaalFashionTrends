@@ -44,6 +44,9 @@ export const AuthProvider = ({ children }) => {
   const login = async (credentials) => {
     const res = await authService.login(credentials);
     if (res && res.success && res.user) {
+      if (res.token && typeof window !== 'undefined') {
+        localStorage.setItem('token', res.token);
+      }
       setUser(res.user);
       toast.success('Successfully logged in.');
     }
@@ -53,6 +56,9 @@ export const AuthProvider = ({ children }) => {
   const adminLogin = async (credentials) => {
     const res = await authService.adminLogin(credentials);
     if (res && res.success && res.admin) {
+      if (res.token && typeof window !== 'undefined') {
+        localStorage.setItem('token', res.token);
+      }
       setUser({ ...res.admin, role: res.admin.role || 'admin' });
       toast.success('Successfully logged in.');
     }
@@ -62,6 +68,9 @@ export const AuthProvider = ({ children }) => {
   const register = async (userData) => {
     const res = await authService.register(userData);
     if (res && res.success && res.user) {
+      if (res.token && typeof window !== 'undefined') {
+        localStorage.setItem('token', res.token);
+      }
       setUser(res.user);
       toast.success('Successfully registered.');
     }
@@ -69,9 +78,17 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = async () => {
-    await authService.logout();
-    setUser(null);
-    toast.success('Logged out successfully.');
+    try {
+      await authService.logout();
+    } catch (e) {
+      // Ignore logout network errors
+    } finally {
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('token');
+      }
+      setUser(null);
+      toast.success('Logged out successfully.');
+    }
   };
 
   const updateProfile = async (profileData) => {

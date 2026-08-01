@@ -17,6 +17,14 @@ api.interceptors.request.use(
       const hostname = window.location.hostname;
       config.baseURL = `http://${hostname}:5000/api`;
     }
+
+    // Attach Bearer token from localStorage for reliable cross-domain authentication (Vercel -> Render)
+    if (typeof window !== 'undefined') {
+      const token = localStorage.getItem('token');
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
+    }
     return config;
   },
   (error) => {

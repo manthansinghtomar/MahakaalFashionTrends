@@ -17,9 +17,11 @@ const generateTokenAndSetCookie = (res, userId, role) => {
   res.cookie('token', token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
     maxAge: 30 * 24 * 60 * 60 * 1000, // 30 Days expiration
   });
+
+  return token;
 };
 
 /**
@@ -55,12 +57,13 @@ export const registerUser = async (req, res, next) => {
     });
 
     // 4. Generate token and set HTTP-only cookie
-    generateTokenAndSetCookie(res, newUser._id, newUser.role);
+    const token = generateTokenAndSetCookie(res, newUser._id, newUser.role);
 
     // 5. Response payload (omitting password credentials)
     res.status(201).json({
       success: true,
       message: 'User registered successfully',
+      token,
       user: {
         _id: newUser._id,
         fullName: newUser.fullName,
@@ -113,11 +116,12 @@ export const loginUser = async (req, res, next) => {
     }
 
     // 5. Generate token and cookie
-    generateTokenAndSetCookie(res, user._id, user.role);
+    const token = generateTokenAndSetCookie(res, user._id, user.role);
 
     res.status(200).json({
       success: true,
       message: 'User logged in successfully',
+      token,
       user: {
         _id: user._id,
         fullName: user.fullName,
@@ -170,11 +174,12 @@ export const loginAdmin = async (req, res, next) => {
     }
 
     // 5. Generate token and cookie
-    generateTokenAndSetCookie(res, admin._id, admin.role);
+    const token = generateTokenAndSetCookie(res, admin._id, admin.role);
 
     res.status(200).json({
       success: true,
       message: 'Administrator logged in successfully',
+      token,
       admin: {
         _id: admin._id,
         fullName: admin.fullName,
@@ -246,7 +251,7 @@ export const logoutUser = async (req, res, next) => {
     res.cookie('token', '', {
       httpOnly: true,
       expires: new Date(0),
-      sameSite: 'lax',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
       secure: process.env.NODE_ENV === 'production',
     });
 
@@ -645,7 +650,7 @@ export const resetPassword = async (req, res, next) => {
     res.cookie('token', '', {
       httpOnly: true,
       expires: new Date(0),
-      sameSite: 'lax',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
       secure: process.env.NODE_ENV === 'production',
     });
 
